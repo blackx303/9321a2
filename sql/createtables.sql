@@ -26,9 +26,10 @@ CREATE TABLE movie (
 
 CREATE TABLE account (
     username varchar(16) not null,
-    salt char(32) not null,
-    password_and_salt_hash char(32) not null, --we use sha256(concat(salt, password))
+    salt char(64) not null, --salt is 32 bytes long, represented as a 64char hexstring
+    password_and_salt_hash char(64) not null, --we use sha256(concat(salt, password))
                                               --salt is changed on password change
+                                              --the salted 32byte hash is stored as a 64char hexstring
     
     primary key (username)
 );
