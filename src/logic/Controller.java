@@ -60,26 +60,73 @@ public class Controller extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         String urlPattern = req.getServletPath();
-        String forwardPage = "home.jsp";
         
         if(urlPattern.equals("/login")) {
-            forwardPage = "login.jsp";
             
             if(req.getParameter("username") != null &&
                     req.getParameter("password") != null) {
                 if(attemptLogin(req, resp)) {
-                    forwardPage = "/";
+                    RequestDispatcher rd = req.getRequestDispatcher("/");
+                    rd.forward(req, resp);
                 } else {
                     req.setAttribute("invalid", req.getParameter("username"));
                 }
+            } else {
+                RequestDispatcher rd = req.getRequestDispatcher("login.jsp");
+                rd.forward(req, resp);
+            }
+        } else if(urlPattern.equals("/register")) {            
+            if(req.getParameter("username") != null &&
+                    req.getParameter("password") != null &&
+                    req.getParameter("email") != null) {
+                if(attemptRegistration(req, resp)) {
+                    resp.sendRedirect("login");
+                } else {
+                    RequestDispatcher rd = req.getRequestDispatcher("register.jsp");
+                    rd.forward(req, resp);
+                }
+            } else {
+                RequestDispatcher rd = req.getRequestDispatcher("register.jsp");
+                rd.forward(req, resp);
             }
         } else {
             doGet(req, resp);//shouldn't really be POST'ing unless one of the above situations
             return;
         }
         
-        RequestDispatcher rd = req.getRequestDispatcher(forwardPage);
-        rd.forward(req, resp);
+    }
+
+    private boolean attemptRegistration(HttpServletRequest req, HttpServletResponse resp) {
+        boolean successful = true;
+        String username = (String) req.getParameter("username");
+        String password = (String) req.getParameter("password");
+        String email = (String) req.getParameter("password");
+        System.out.println("Attempting to register user \"" + username + "\" with pass \"" + password + "\" with email \"" + email + "\"");
+        
+        if(users.findUser(username) != null) {
+            successful = false;
+            req.setAttribute("usertaken", username);
+        }
+        
+        if(! username.toLowerCase().matches("[a-z][a-z0-9_]{4,15}")) {
+            successful = false;
+            req.setAttribute("badusername", username);
+        }
+        
+        if(!(email.contains("@"))) {//TODO this is just a basic check
+            successful = false;
+            req.setAttribute("bademail", email);
+        }
+        
+        if(successful) {
+            username = username.toLowerCase();
+            
+            //createUser(username, password, email);
+            System.out.println("Successfully registered \"" + username + "\" (pending confirmation).");
+        } else {
+            System.out.println("Unsuccessful in registering \"" + username + "\".");
+        }
+        return successful;
     }
 
     private boolean attemptLogin(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

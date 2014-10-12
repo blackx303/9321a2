@@ -15,9 +15,9 @@
 	   Welcome ${login}
 	</c:if>
 
-    <a href="register">Register</a>
     
     <c:if test="${! loggedin}">
+        <a href="register">Register</a>
         <a href="login">Login</a>
     </c:if>
     <c:if test="${loggedin }">
