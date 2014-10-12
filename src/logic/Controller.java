@@ -70,6 +70,8 @@ public class Controller extends HttpServlet {
                     rd.forward(req, resp);
                 } else {
                     req.setAttribute("invalid", req.getParameter("username"));
+                    RequestDispatcher rd = req.getRequestDispatcher("login.jsp");
+                    rd.forward(req, resp);
                 }
             } else {
                 RequestDispatcher rd = req.getRequestDispatcher("login.jsp");
@@ -100,7 +102,7 @@ public class Controller extends HttpServlet {
         boolean successful = true;
         String username = (String) req.getParameter("username");
         String password = (String) req.getParameter("password");
-        String email = (String) req.getParameter("password");
+        String email = (String) req.getParameter("email");
         System.out.println("Attempting to register user \"" + username + "\" with pass \"" + password + "\" with email \"" + email + "\"");
         
         if(users.findUser(username) != null) {
