@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -10,8 +11,18 @@
 
 <h1>Home page</h1>
 
-<a href="register">Register</a>
-<a href="login">Login</a>
+	<c:if test="${! empty login}" var="loggedin">
+	   Welcome ${login}
+	</c:if>
+
+    <a href="register">Register</a>
+    
+    <c:if test="${! loggedin}">
+        <a href="login">Login</a>
+    </c:if>
+    <c:if test="${loggedin }">
+        <a href="logout">Logout</a>
+    </c:if>
 
 </body>
 </html>
