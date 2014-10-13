@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.sql.SQLException;
 
 import javax.servlet.RequestDispatcher;
@@ -14,10 +15,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 
+import jdbc.PendingUserDTO;
 import jdbc.UserDAO;
 import jdbc.UserDTO;
+import jdbc.ViewerDTO;
 
-@WebServlet(urlPatterns = {"/", "/register", "/login", "/logout"})
+@WebServlet(urlPatterns = {"/", "/home", "/register", "/login", "/logout", "/confirm"})
 public class Controller extends HttpServlet {
     private UserDAO users;
     
@@ -35,7 +38,7 @@ public class Controller extends HttpServlet {
             throws ServletException, IOException {
         String urlPattern = req.getServletPath();
         
-        if(urlPattern.equals("/")) {
+        if(urlPattern.equals("/") || urlPattern.equals("/home")) {
             RequestDispatcher rd = req.getRequestDispatcher("home.jsp");
             rd.forward(req, resp);
         } else if(urlPattern.equals("/register")) {
@@ -48,6 +51,35 @@ public class Controller extends HttpServlet {
             logout(req);
             RequestDispatcher rd = req.getRequestDispatcher("/");
             rd.forward(req, resp);
+        } else if(urlPattern.equals("/confirm")) {
+            if(req.getParameter("u") != null &&
+                    req.getParameter("k") != null) {
+                if(attemptRegistrationConfirmation(req, req.getParameter("u"),
+                        req.getParameter("k"))) {
+                    //if successful confirmation
+                    RequestDispatcher rd = req.getRequestDispatcher("/profile");
+                    rd.forward(req, resp);
+                } else {
+                    RequestDispatcher rd = req.getRequestDispatcher("/badconfirm.jsp");
+                    rd.forward(req, resp);
+                }
+            } else {
+                req.getRequestDispatcher("/").forward(req, resp);
+            }
+            
+        } else if(urlPattern.equals("/profile")) {
+            if(req.getSession().getAttribute("login") != null) {
+                ViewerDTO user = users.findNormalUser((String)req.getSession().getAttribute("login"));
+
+                req.setAttribute("nickname", user.getNickname());
+                req.setAttribute("email", user.getEmail());
+                req.setAttribute("firstname", user.getFirstName());
+                req.setAttribute("lastname", user.getLastName());
+                
+                req.getRequestDispatcher("profile.jsp").forward(req, resp);
+            } else {
+                req.getRequestDispatcher("home.jsp").forward(req, resp);
+            }
         } else {
             //redirect to home page
             System.out.println("forwarding request for: \"" + urlPattern + "\" to home page");
@@ -91,6 +123,30 @@ public class Controller extends HttpServlet {
                 RequestDispatcher rd = req.getRequestDispatcher("register.jsp");
                 rd.forward(req, resp);
             }
+        } else if(urlPattern.equals("/profile")) {
+            if(req.getSession().getAttribute("login") != null &&
+                    req.getParameter("nickname") != null &&
+                    req.getParameter("email") != null &&
+                    req.getParameter("firstname") != null &&
+                    req.getParameter("lastname") != null) {
+                ViewerDTO user = users.findNormalUser((String)req.getSession().getAttribute("login"));
+                
+                user.setNickname((String)req.getParameter("nickname"));
+                user.setEmail((String)req.getParameter("email"));
+                user.setFirstName((String)req.getParameter("firstname"));
+                user.setLastName((String)req.getParameter("lastname"));
+                
+                users.storeViewer(user);
+                
+                req.setAttribute("nickname", req.getParameter("nickname"));
+                req.setAttribute("email", req.getParameter("email"));
+                req.setAttribute("firstname", req.getParameter("firstname"));
+                req.setAttribute("lastname", req.getParameter("lastname"));
+                
+                resp.sendRedirect("profile");
+            } else {
+                req.getRequestDispatcher("/").forward(req, resp);
+            }
         } else {
             doGet(req, resp);//shouldn't really be POST'ing unless one of the above situations
             return;
@@ -124,7 +180,16 @@ public class Controller extends HttpServlet {
             username = username.toLowerCase();
             
             //createUser(username, password, email);
-            //verification link should be /confirm?k=baacdfe12fea31a&e=email
+            //verification link should be /confirm?k=baacdfe12fea31a&u=user
+            byte[] salt = generateSalt();
+            String saltString = DatatypeConverter.printHexBinary(salt);
+            byte[] hash = hashPassword(password, salt);
+            String hashString = DatatypeConverter.printHexBinary(hash);
+            
+            String confirmationKey = users.createPending(username, saltString, hashString, email);
+            //TODO send a verification link
+            System.out.println("\"" + username + "\" can activate their account by visiting /confirm?k=" + confirmationKey + "&u=" + username);
+            
             System.out.println("Successfully registered \"" + username + "\" (pending confirmation).");
         } else {
             System.out.println("Unsuccessful in registering \"" + username + "\".");
@@ -132,6 +197,22 @@ public class Controller extends HttpServlet {
         return successful;
     }
 
+    private boolean attemptRegistrationConfirmation(HttpServletRequest req, String username, String confirmationKey) {
+        boolean success = false;
+        PendingUserDTO user = users.findPendingUser(username);
+        
+        if(user != null) {
+            if(user.getConfirmationKey().equals(confirmationKey)) {
+                users.confirmPendingUser(username);
+                
+                req.getSession().setAttribute("login", username);
+                success = true;
+            }
+        }
+        
+        return success;
+    }
+    
     private boolean attemptLogin(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         System.out.println("Attempted to login with username: \"" + req.getParameter("username") + "\"");
         System.out.println("\tand password: \"" + req.getParameter("password") + "\"");
@@ -173,6 +254,15 @@ public class Controller extends HttpServlet {
         
         return goodLogin;
     }
+    
+    private byte[] generateSalt() {
+        byte[] salt = new byte[32];
+        
+        SecureRandom r = new SecureRandom();
+        r.nextBytes(salt);
+        
+        return salt;
+    }
 
     private byte[] hashPassword(String password, byte[] saltBytes) {
         byte[] loginHash = null;
@@ -201,6 +291,7 @@ public class Controller extends HttpServlet {
         if(username != null) {
             System.out.print(" " + username);
             req.getSession().setAttribute("login", null);
+            req.setAttribute("loggedOut", true);
         }
         
         System.out.println(".");

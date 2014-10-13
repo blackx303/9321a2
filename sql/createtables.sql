@@ -13,6 +13,7 @@ DROP TABLE age_rating;
 DROP TABLE genre;
 DROP TABLE viewer_account;
 DROP TABLE admin_account;
+DROP TABLE pending_account;
 DROP TABLE account;
 DROP TABLE movie;
 
@@ -31,6 +32,17 @@ CREATE TABLE account (
                                               --salt is changed on password change
                                               --the salted 32byte hash is stored as a 64char hexstring
     
+    primary key (username)
+);
+
+CREATE TABLE pending_account (
+    username varchar(16) not null,
+    
+    email varchar(254) not null,
+    confirmation_key char(64) not null,
+    created_at timestamp,
+    
+    foreign key (username) references account(username),
     primary key (username)
 );
 

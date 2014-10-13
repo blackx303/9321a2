@@ -12,7 +12,10 @@
 <h1>Home page</h1>
 
 	<c:if test="${! empty login}" var="loggedin">
-	   Welcome ${login}
+	   Welcome ${login} [<a href="profile">Profile page</a>]
+	</c:if>
+	<c:if test="${loggedOut}">
+	   You have successfully logged out.
 	</c:if>
 
     
