@@ -124,6 +124,7 @@ public class Controller extends HttpServlet {
             username = username.toLowerCase();
             
             //createUser(username, password, email);
+            //verification link should be /confirm?k=baacdfe12fea31a&e=email
             System.out.println("Successfully registered \"" + username + "\" (pending confirmation).");
         } else {
             System.out.println("Unsuccessful in registering \"" + username + "\".");
