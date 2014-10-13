@@ -49,8 +49,7 @@ public class UserController extends HttpServlet {
             rd.forward(req, resp);
         } else if(urlPattern.equals("/logout")) {
             logout(req);
-            RequestDispatcher rd = req.getRequestDispatcher("/");
-            rd.forward(req, resp);
+            resp.sendRedirect(getServletContext().getContextPath());
         } else if(urlPattern.equals("/confirm")) {
             if(req.getParameter("u") != null &&
                     req.getParameter("k") != null) {
@@ -291,7 +290,6 @@ public class UserController extends HttpServlet {
         if(username != null) {
             System.out.print(" " + username);
             req.getSession().setAttribute("login", null);
-            req.setAttribute("loggedOut", true);
         }
         
         System.out.println(".");
