@@ -93,18 +93,23 @@ CREATE TABLE amenity (
 );
 
 CREATE TABLE cinema (
-    cinema_id integer not null,
+    location varchar(64) not null,
     capacity integer not null,
     
     constraint capacity_nonnegative check (capacity >= 0),
     
-    primary key (cinema_id)
+    primary key (location)
 );
 
 CREATE TABLE viewers_rate_movies (
     username varchar(16) not null,
     title varchar(255) not null,
     release_date date not null,
+    
+    rating integer not null,
+    review_text varchar(1024) not null,
+    
+    constraint rating_is_star_rating check (rating > 0 and rating <= 5),
     
     foreign key (title, release_date) references movie(title, release_date),
     
@@ -160,40 +165,40 @@ CREATE TABLE movies_have_age_ratings (
 );
 
 CREATE TABLE cinemas_have_amenities (
-    cinema_id integer not null,
+    location varchar(64) not null,
     amenity varchar(32) not null,
     
-    foreign key (cinema_id) references cinema(cinema_id),
+    foreign key (location) references cinema(location),
     foreign key (amenity) references amenity(amenity_type),
     
-    primary key (cinema_id, amenity)
+    primary key (location, amenity)
 );
 
 CREATE TABLE movies_screen_in_cinemas (
     title varchar(255) not null,
     release_date date not null,
-    cinema_id integer not null,
+    location varchar(64) not null,
     screening_time timestamp not null,
     
     foreign key (title, release_date) references movie(title, release_date),
-    foreign key (cinema_id) references cinema(cinema_id),
+    foreign key (location) references cinema(location),
     
-    primary key (title, release_date, cinema_id, screening_time)
+    primary key (title, release_date, location, screening_time)
 );
 
 CREATE TABLE viewer_accounts_book_screenings (
     username varchar(16) not null, --a user can only make one booking for a screening
     title varchar(255) not null,
     release_date date not null,
-    cinema_id integer not null,
+    location varchar(64) not null,
     screening_time timestamp not null,
     num_seats integer not null,
     
     constraint num_seats_positive check (num_seats > 0),
     
     foreign key (title, release_date) references movie(title, release_date),
-    foreign key (title, release_date, cinema_id, screening_time) references
-            movies_screen_in_cinemas(title, release_date, cinema_id, screening_time),
+    foreign key (title, release_date, location, screening_time) references
+            movies_screen_in_cinemas(title, release_date, location, screening_time),
     
-    primary key (username, title, release_date, cinema_id, screening_time)
+    primary key (username, title, release_date, location, screening_time)
 );
