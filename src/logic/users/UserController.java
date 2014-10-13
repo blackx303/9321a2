@@ -49,7 +49,7 @@ public class UserController extends HttpServlet {
             rd.forward(req, resp);
         } else if(urlPattern.equals("/logout")) {
             logout(req);
-            resp.sendRedirect(getServletContext().getContextPath());
+            resp.sendRedirect("");
         } else if(urlPattern.equals("/confirm")) {
             if(req.getParameter("u") != null &&
                     req.getParameter("k") != null) {
@@ -69,13 +69,18 @@ public class UserController extends HttpServlet {
         } else if(urlPattern.equals("/profile")) {
             if(req.getSession().getAttribute("login") != null) {
                 ViewerDTO user = users.findNormalUser((String)req.getSession().getAttribute("login"));
-
-                req.setAttribute("nickname", user.getNickname());
-                req.setAttribute("email", user.getEmail());
-                req.setAttribute("firstname", user.getFirstName());
-                req.setAttribute("lastname", user.getLastName());
                 
-                req.getRequestDispatcher("profile.jsp").forward(req, resp);
+                if(user != null) {
+                    //ie if it is a viewer_account
+                    req.setAttribute("nickname", user.getNickname());
+                    req.setAttribute("email", user.getEmail());
+                    req.setAttribute("firstname", user.getFirstName());
+                    req.setAttribute("lastname", user.getLastName());
+                    
+                    req.getRequestDispatcher("profile.jsp").forward(req, resp);
+                } else {
+                    req.getRequestDispatcher("home.jsp").forward(req, resp);
+                }
             } else {
                 req.getRequestDispatcher("home.jsp").forward(req, resp);
             }
@@ -113,7 +118,7 @@ public class UserController extends HttpServlet {
                     req.getParameter("password") != null &&
                     req.getParameter("email") != null) {
                 if(attemptRegistration(req, resp)) {
-                    resp.sendRedirect("login");
+                    resp.sendRedirect("");
                 } else {
                     RequestDispatcher rd = req.getRequestDispatcher("register.jsp");
                     rd.forward(req, resp);
