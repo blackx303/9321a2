@@ -1,4 +1,4 @@
-package jdbc;
+package jdbc.users;
 
 public class ViewerDTO extends UserDTO {
 

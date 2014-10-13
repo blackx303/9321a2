@@ -1,4 +1,4 @@
-package jdbc;
+package jdbc.users;
 
 public interface UserDAO {
     public void storeUser(UserDTO user);

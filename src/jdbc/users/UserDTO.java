@@ -1,4 +1,4 @@
-package jdbc;
+package jdbc.users;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;

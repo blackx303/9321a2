@@ -1,4 +1,4 @@
-package logic;
+package logic.users;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -15,16 +15,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 
-import jdbc.PendingUserDTO;
-import jdbc.UserDAO;
-import jdbc.UserDTO;
-import jdbc.ViewerDTO;
+import jdbc.users.PendingUserDTO;
+import jdbc.users.UserDAO;
+import jdbc.users.UserDTO;
+import jdbc.users.ViewerDTO;
 
 @WebServlet(urlPatterns = {"/", "/home", "/register", "/login", "/logout", "/confirm"})
-public class Controller extends HttpServlet {
+public class UserController extends HttpServlet {
     private UserDAO users;
     
-    public Controller() {
+    public UserController() {
         super();
         try {
             users = new UserDAODerbyImpl();

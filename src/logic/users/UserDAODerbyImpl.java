@@ -1,4 +1,4 @@
-package logic;
+package logic.users;
 
 import java.security.SecureRandom;
 import java.sql.Connection;
@@ -10,10 +10,10 @@ import java.sql.Timestamp;
 import javax.xml.bind.DatatypeConverter;
 
 import jdbc.DBConnFactory;
-import jdbc.PendingUserDTO;
-import jdbc.UserDAO;
-import jdbc.UserDTO;
-import jdbc.ViewerDTO;
+import jdbc.users.PendingUserDTO;
+import jdbc.users.UserDAO;
+import jdbc.users.UserDTO;
+import jdbc.users.ViewerDTO;
 
 public class UserDAODerbyImpl implements UserDAO {
     private Connection conn;

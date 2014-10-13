@@ -8,6 +8,7 @@
 </head>
 <body>
     <h1>${login} Profile Page</h1>
+    
     <form action="profile" method="post">
         <label for="nickname">Nickname: </label><input type="text" name="nickname" value="${nickname}" /><br />
         <label for="firstname">First name: </label><input type="text" name="firstname" value="${firstname}" /><br />
