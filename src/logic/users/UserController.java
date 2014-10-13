@@ -101,13 +101,19 @@ public class UserController extends HttpServlet {
             
             if(req.getParameter("username") != null &&
                     req.getParameter("password") != null) {
-                if(attemptLogin(req, resp)) {
-                    RequestDispatcher rd = req.getRequestDispatcher("/");
-                    rd.forward(req, resp);
+                PendingUserDTO pendingUser = users.findPendingUser((String)req.getParameter("username"));
+                if(pendingUser == null) {
+                    if(attemptLogin(req, resp)) {
+                        RequestDispatcher rd = req.getRequestDispatcher("/");
+                        rd.forward(req, resp);
+                    } else {
+                        req.setAttribute("invalid", req.getParameter("username"));
+                        RequestDispatcher rd = req.getRequestDispatcher("login.jsp");
+                        rd.forward(req, resp);
+                    }
                 } else {
-                    req.setAttribute("invalid", req.getParameter("username"));
-                    RequestDispatcher rd = req.getRequestDispatcher("login.jsp");
-                    rd.forward(req, resp);
+                    req.setAttribute("pending", true);
+                    req.getRequestDispatcher("login.jsp").forward(req, resp);
                 }
             } else {
                 RequestDispatcher rd = req.getRequestDispatcher("login.jsp");
