@@ -5,5 +5,23 @@
 -- which is obviously stored as a hexstring
 INSERT INTO account (username, salt, password_and_salt_hash)
         values ('admin', '3030303030303030303030303030303030303030303030303030303030303030',
-        '893C750ABE47D04EA480910A2BC8787D1323CD11D4E6EAA3A6C890DBEB42BFA0');
+        '893c750abe47d04ea480910a2bc8787d1323cd11d4e6eaa3a6c890dbeb42bfa0');
 INSERT INTO admin_account (username) values ('admin');
+
+INSERT INTO movie(title, release_date)
+	VALUES('shrek', '2011-01-01');
+
+INSERT INTO movie(title, release_date)
+	VALUES('Bob the Builder', '2011-01-01');
+
+INSERT INTO genre(genre_title)
+	VALUES('Comedy');
+
+INSERT INTO genre(genre_title)
+	VALUES('Action');
+	
+INSERT INTO movies_have_genres(title, release_date, genre_title)
+	VALUES('shrek', '2011-01-01', 'Comedy');
+
+INSERT INTO movies_have_genres(title, release_date, genre_title)
+	VALUES('Bob the Builder', '2011-01-01', 'Action');
