@@ -15,4 +15,5 @@ public interface UserDAO {
     
     public void confirmPendingUser(String username);
     public ViewerDTO findNormalUser(String username);
+    public UserDTO findAdminUser(String username);
 }

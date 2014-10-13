@@ -17,6 +17,7 @@ import javax.xml.bind.DatatypeConverter;
 
 import jdbc.users.PendingUserDTO;
 import jdbc.users.UserDAO;
+import jdbc.users.UserDAODerbyImpl;
 import jdbc.users.UserDTO;
 import jdbc.users.ViewerDTO;
 
@@ -243,6 +244,9 @@ public class UserController extends HttpServlet {
         if(authenticated) {
             System.out.println(username + " successfully logged in");
             req.getSession().setAttribute("login", username);
+            if(users.findAdminUser(username) != null) {
+                req.getSession().setAttribute("adminlogin", true);
+            }
         } else {
             System.out.println("Login failed.");
         }
@@ -301,6 +305,7 @@ public class UserController extends HttpServlet {
         if(username != null) {
             System.out.print(" " + username);
             req.getSession().setAttribute("login", null);
+            req.getSession().setAttribute("adminlogin", false);
         }
         
         System.out.println(".");

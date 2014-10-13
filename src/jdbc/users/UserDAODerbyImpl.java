@@ -1,4 +1,4 @@
-package logic.users;
+package jdbc.users;
 
 import java.security.SecureRandom;
 import java.sql.Connection;
@@ -10,10 +10,6 @@ import java.sql.Timestamp;
 import javax.xml.bind.DatatypeConverter;
 
 import jdbc.DBConnFactory;
-import jdbc.users.PendingUserDTO;
-import jdbc.users.UserDAO;
-import jdbc.users.UserDTO;
-import jdbc.users.ViewerDTO;
 
 public class UserDAODerbyImpl implements UserDAO {
     private Connection conn;
@@ -181,6 +177,24 @@ public class UserDAODerbyImpl implements UserDAO {
             if(p.next()) {
                 user = new ViewerDTO(p.getString(1), p.getString(2), p.getString(3), p.getString(4),
                         p.getString(5), p.getString(6), p.getString(7));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return user;
+    }
+
+    @Override
+    public UserDTO findAdminUser(String username) {
+        UserDTO user = null;
+        try {
+            PreparedStatement statement = conn.prepareStatement("SELECT username "
+                    + "FROM admin_account WHERE username = ?");
+            statement.setString(1, username);
+            ResultSet r = statement.executeQuery();
+            if(r.next()) {
+                user = findUser(username);
             }
         } catch (SQLException e) {
             e.printStackTrace();
