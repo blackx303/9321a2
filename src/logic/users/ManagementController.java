@@ -2,6 +2,11 @@ package logic.users;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,6 +18,7 @@ import jdbc.management.AmenityDAO;
 import jdbc.management.AmenityDAODerbyImpl;
 import jdbc.management.CinemaDAO;
 import jdbc.management.CinemaDAODerbyImpl;
+import jdbc.management.CinemaDTO;
 
 /**
  * Servlet implementation class ManagementController
@@ -67,8 +73,11 @@ public class ManagementController extends HttpServlet {
 	        String urlPattern = request.getServletPath();
 	        
 	        if(urlPattern.equals("/cinema")) {
-	            
-	            loadCinemaPage(request, response);
+	            if(request.getParameter("location") != null &&
+	                    request.getParameter("capacity") != null) {
+	                attemptAddCinema(request);
+	            }
+	            response.sendRedirect("cinema");
 	        } else {
 	            request.getRequestDispatcher(urlPattern).forward(request, response);
 	        }
@@ -76,6 +85,36 @@ public class ManagementController extends HttpServlet {
 	        response.sendRedirect("home");
 	    }
 	}
+
+    private void attemptAddCinema(HttpServletRequest request) {
+        String location = request.getParameter("location");
+        try {
+            int capacity = Integer.parseInt(request.getParameter("capacity"));
+            capacity = Math.max(1, capacity);
+            Set<String> amenitiesChecked = new HashSet<String>();
+            
+            //get list of amenities
+            Enumeration<String> paramNames = request.getParameterNames();
+            while(paramNames.hasMoreElements()) {
+                String name = paramNames.nextElement();
+                if(name.startsWith("amenity_")) {
+                    String amenity = name.replaceFirst("amenity_", "");
+                    System.out.println("got amenity " + amenity);
+                    amenitiesChecked.add(amenity);
+                }
+            }
+            
+            //filter by legit amenities
+            amenitiesChecked.retainAll(amenities.findAllTypes());
+            
+            CinemaDTO newCinema = new CinemaDTO(location, capacity, amenitiesChecked);
+            cinemas.createCinema(newCinema);
+            
+        } catch(NumberFormatException n) {
+            //We got invalid input;
+            System.out.println("invalid capacity specified " + request.getParameter("capacity"));
+        }
+    }
 
     private void loadCinemaPage(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {

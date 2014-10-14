@@ -1,13 +1,11 @@
 package jdbc.management;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-import jdbc.DBConnFactory;
 import jdbc.GenericDAODerbyImpl;
 
 public class AmenityDAODerbyImpl extends GenericDAODerbyImpl implements AmenityDAO {
@@ -17,8 +15,8 @@ public class AmenityDAODerbyImpl extends GenericDAODerbyImpl implements AmenityD
     }
 
     @Override
-    public List<String> findAllTypes() {
-        List<String> types = new ArrayList<String>();
+    public Set<String> findAllTypes() {
+        Set<String> types = new HashSet<String>();
         
         try {
             PreparedStatement statement = conn.prepareStatement("SELECT amenity_type FROM amenity");

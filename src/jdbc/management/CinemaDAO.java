@@ -6,4 +6,6 @@ public interface CinemaDAO {
 
     List<CinemaDTO> findAll();
 
+    boolean createCinema(CinemaDTO newCinema);
+
 }

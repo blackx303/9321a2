@@ -1,13 +1,14 @@
 package jdbc.management;
 
 import java.util.List;
+import java.util.Set;
 
 public class CinemaDTO {
     private String location;
     private int capacity;
-    private List<String> amenities;
+    private Set<String> amenities;
     
-    public CinemaDTO(String location, int capacity, List<String> amenities) {
+    public CinemaDTO(String location, int capacity, Set<String> amenities) {
         this.location = location;
         this.setCapacity(capacity);
         this.setAmenities(amenities);
@@ -25,11 +26,11 @@ public class CinemaDTO {
         this.capacity = capacity;
     }
 
-    public List<String> getAmenities() {
+    public Set<String> getAmenities() {
         return amenities;
     }
 
-    public void setAmenities(List<String> amenities) {
+    public void setAmenities(Set<String> amenities) {
         this.amenities = amenities;
     }
 

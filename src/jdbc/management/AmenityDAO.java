@@ -1,9 +1,9 @@
 package jdbc.management;
 
-import java.util.List;
+import java.util.Set;
 
 public interface AmenityDAO {
 
-    List<String> findAllTypes();
+    Set<String> findAllTypes();
 
 }
