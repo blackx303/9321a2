@@ -40,13 +40,13 @@ public class UserController extends HttpServlet {
         String urlPattern = req.getServletPath();
         
         if(urlPattern.equals("/") || urlPattern.equals("/home")) {
-            RequestDispatcher rd = req.getRequestDispatcher("home.jsp");
+            RequestDispatcher rd = req.getRequestDispatcher("WEB-INF/home.jsp");
             rd.forward(req, resp);
         } else if(urlPattern.equals("/register")) {
-            RequestDispatcher rd = req.getRequestDispatcher("register.jsp");
+            RequestDispatcher rd = req.getRequestDispatcher("WEB-INF/users/register.jsp");
             rd.forward(req, resp);
         } else if(urlPattern.equals("/login")) {
-            RequestDispatcher rd = req.getRequestDispatcher("login.jsp");
+            RequestDispatcher rd = req.getRequestDispatcher("WEB-INF/users/login.jsp");
             rd.forward(req, resp);
         } else if(urlPattern.equals("/logout")) {
             logout(req);
@@ -60,7 +60,7 @@ public class UserController extends HttpServlet {
                     RequestDispatcher rd = req.getRequestDispatcher("/profile");
                     rd.forward(req, resp);
                 } else {
-                    RequestDispatcher rd = req.getRequestDispatcher("/badconfirm.jsp");
+                    RequestDispatcher rd = req.getRequestDispatcher("WEB-INF/users/badconfirm.jsp");
                     rd.forward(req, resp);
                 }
             } else {
@@ -78,17 +78,17 @@ public class UserController extends HttpServlet {
                     req.setAttribute("firstname", user.getFirstName());
                     req.setAttribute("lastname", user.getLastName());
                     
-                    req.getRequestDispatcher("profile.jsp").forward(req, resp);
+                    req.getRequestDispatcher("WEB-INF/users/profile.jsp").forward(req, resp);
                 } else {
-                    req.getRequestDispatcher("home.jsp").forward(req, resp);
+                    req.getRequestDispatcher("WEB-INF/home.jsp").forward(req, resp);
                 }
             } else {
-                req.getRequestDispatcher("home.jsp").forward(req, resp);
+                req.getRequestDispatcher("WEB-INF/home.jsp").forward(req, resp);
             }
         } else {
             //redirect to home page
             System.out.println("forwarding request for: \"" + urlPattern + "\" to home page");
-            RequestDispatcher rd = req.getRequestDispatcher("home.jsp");
+            RequestDispatcher rd = req.getRequestDispatcher("WEB-INF/home.jsp");
             rd.forward(req, resp);
         }
     }
@@ -105,19 +105,18 @@ public class UserController extends HttpServlet {
                 PendingUserDTO pendingUser = users.findPendingUser((String)req.getParameter("username"));
                 if(pendingUser == null) {
                     if(attemptLogin(req, resp)) {
-                        RequestDispatcher rd = req.getRequestDispatcher("/");
-                        rd.forward(req, resp);
+                        resp.sendRedirect("");
                     } else {
                         req.setAttribute("invalid", req.getParameter("username"));
-                        RequestDispatcher rd = req.getRequestDispatcher("login.jsp");
+                        RequestDispatcher rd = req.getRequestDispatcher("WEB-INF/users/login.jsp");
                         rd.forward(req, resp);
                     }
                 } else {
                     req.setAttribute("pending", true);
-                    req.getRequestDispatcher("login.jsp").forward(req, resp);
+                    req.getRequestDispatcher("WEB-INF/users/login.jsp").forward(req, resp);
                 }
             } else {
-                RequestDispatcher rd = req.getRequestDispatcher("login.jsp");
+                RequestDispatcher rd = req.getRequestDispatcher("WEB-INF/users/login.jsp");
                 rd.forward(req, resp);
             }
         } else if(urlPattern.equals("/register")) {            
@@ -127,11 +126,11 @@ public class UserController extends HttpServlet {
                 if(attemptRegistration(req, resp)) {
                     resp.sendRedirect("");
                 } else {
-                    RequestDispatcher rd = req.getRequestDispatcher("register.jsp");
+                    RequestDispatcher rd = req.getRequestDispatcher("WEB-INF/users/register.jsp");
                     rd.forward(req, resp);
                 }
             } else {
-                RequestDispatcher rd = req.getRequestDispatcher("register.jsp");
+                RequestDispatcher rd = req.getRequestDispatcher("WEB-INF/users/register.jsp");
                 rd.forward(req, resp);
             }
         } else if(urlPattern.equals("/profile")) {
@@ -156,7 +155,7 @@ public class UserController extends HttpServlet {
                 
                 resp.sendRedirect("profile");
             } else {
-                req.getRequestDispatcher("/").forward(req, resp);
+                req.getRequestDispatcher("/home").forward(req, resp);
             }
         } else {
             doGet(req, resp);//shouldn't really be POST'ing unless one of the above situations

@@ -18,7 +18,9 @@
     
     <!-- Login/out etc -->
     <c:if test="${! empty login}" var="loggedin">
-       Welcome ${login} [<a href="profile">Profile page</a>]
+       Welcome ${login} 
+       <c:if test="${login eq 'admin'}" var="adminlogin">[<a href="manage">Manage Application</a>]</c:if>
+       <c:if test="${! adminlogin}">[<a href="profile">Profile page</a>]</c:if>
     </c:if>
     <c:if test="${! loggedin}">
         <a href="register">Register</a>

@@ -10,12 +10,12 @@ import java.sql.Timestamp;
 import javax.xml.bind.DatatypeConverter;
 
 import jdbc.DBConnFactory;
+import jdbc.GenericDAODerbyImpl;
 
-public class UserDAODerbyImpl implements UserDAO {
-    private Connection conn;
-    
+public class UserDAODerbyImpl extends GenericDAODerbyImpl implements UserDAO {
+
     public UserDAODerbyImpl() throws SQLException {
-        this.conn = DBConnFactory.getConnection();
+        super();
     }
 
     @Override
