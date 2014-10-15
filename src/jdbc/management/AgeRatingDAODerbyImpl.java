@@ -20,7 +20,7 @@ public class AgeRatingDAODerbyImpl extends GenericDAODerbyImpl implements
         List<String> ageRatings = new ArrayList<String>();
         
         try {
-            PreparedStatement ratingsQ = conn.prepareStatement("SELECT rating FROM age_ratings");
+            PreparedStatement ratingsQ = conn.prepareStatement("SELECT rating FROM age_ratings ORDER BY rating");
             ResultSet ratings = ratingsQ.executeQuery();
             while(ratings.next()) {
                 ageRatings.add(ratings.getString(1));

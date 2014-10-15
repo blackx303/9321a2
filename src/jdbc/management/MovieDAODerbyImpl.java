@@ -52,4 +52,34 @@ public class MovieDAODerbyImpl extends GenericDAODerbyImpl implements MovieDAO {
         return movies;
     }
 
+    @Override
+    public boolean create(MovieDTO movie) {
+        boolean success = false;
+        try {
+            PreparedStatement existsMovie = conn.prepareStatement("SELECT * FROM movies WHERE title = ? and release_date = ?");
+            existsMovie.setString(1, movie.getTitle());
+            existsMovie.setDate(2, new java.sql.Date(movie.getReleaseDate().getTime()));
+            
+            ResultSet exists = existsMovie.executeQuery();
+            
+            if(!exists.next()) {
+                PreparedStatement insertMovie = conn.prepareStatement("INSERT INTO movies (title, release_date, age_rating, director, actors, synopsis) "
+                    + "VALUES (?, ?, ?, ?, ?, ?)");
+                insertMovie.setString(1, movie.getTitle());
+                insertMovie.setDate(2, new java.sql.Date(movie.getReleaseDate().getTime()));
+                insertMovie.setString(3, movie.getAgeRating());
+                insertMovie.setString(4, movie.getDirector());
+                insertMovie.setString(5, movie.getActors());
+                insertMovie.setString(6, movie.getSynopsis());
+                
+                insertMovie.executeUpdate();
+                success = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return success;
+    }
+
 }
