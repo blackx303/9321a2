@@ -194,6 +194,7 @@ public class ManagementController extends HttpServlet {
             HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute("movies", movies.findAll());
         request.setAttribute("ageratings", ageRatings.findAll());
+        request.setAttribute("genres", genres.findAll());
         request.getRequestDispatcher("WEB-INF/manage/movie.jsp").forward(request, response);
     }
 }

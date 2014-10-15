@@ -11,7 +11,11 @@
         <label>Release Date: <input type="date" required name="releasedate" value="2014-01-01"/></label>
         <label>Poster (jpg/png): <input type="file" name="poster" /></label>
         <label>Actors/Actresses: <input type="text" name="actors" /></label>
-        <label>Genre(s): </label>
+        <fieldset>
+            Genre(s): 
+                <c:forEach items="${genres}" var="genre">
+                    <label>${genre}<input type="checkbox" name="genre_${genre}"></label>
+                </c:forEach> </fieldset>
         <label>Director: <input type="text" name="director" /></label>
         <label>Age Rating: <select required name="agerating">
                 <c:forEach items="${ageratings}" var="agerating">

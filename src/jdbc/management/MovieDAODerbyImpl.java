@@ -73,6 +73,16 @@ public class MovieDAODerbyImpl extends GenericDAODerbyImpl implements MovieDAO {
                 insertMovie.setString(6, movie.getSynopsis());
                 
                 insertMovie.executeUpdate();
+                
+                PreparedStatement insertMovieGenre = conn.prepareStatement("INSERT INTO movies_have_genres (title, release_date, genre_title) "
+                        + "VALUES (?, ?, ?)");
+                insertMovieGenre.setString(1, movie.getTitle());
+                insertMovieGenre.setDate(2, new java.sql.Date(movie.getReleaseDate().getTime()));
+                for(String genre : movie.getGenres()) {
+                    insertMovieGenre.setString(3, genre);
+                    insertMovieGenre.executeUpdate();
+                }
+                
                 success = true;
             }
         } catch (SQLException e) {

@@ -10,9 +10,12 @@
         Add Cinema
         <label>Cinema Location: <input type="text" name="location" /></label>
         <label for="capacity">Capacity: <input type="number" min="1" value="50" name="capacity" /></label>
-        <c:forEach items="${amenitytypes}" var="type">
-            <label>${type}<input type="checkbox" name="amenity_${type}"></label>
-        </c:forEach>
+        <fieldset>
+            Amenities:
+	        <c:forEach items="${amenitytypes}" var="type">
+	            <label>${type}<input type="checkbox" name="amenity_${type}"></label>
+	        </c:forEach>
+	    </fieldset>
         <input type="submit" value="Add Cinema" />
     </form>
     
