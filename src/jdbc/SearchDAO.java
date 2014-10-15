@@ -2,6 +2,8 @@ package jdbc;
 
 import java.util.ArrayList;
 
+import jdbc.management.MovieDTO;
+
 
 public interface SearchDAO {
 	

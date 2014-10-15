@@ -1,31 +1,38 @@
 DROP TABLE viewer_accounts_book_screenings;
 DROP TABLE movies_screen_in_cinemas;
 DROP TABLE cinemas_have_amenities;
-DROP TABLE movies_have_age_ratings;
-DROP TABLE directors_direct_movies;
-DROP TABLE actors_act_in_movies;
 DROP TABLE movies_have_genres;
 DROP TABLE viewers_rate_movies;
-DROP TABLE cinema;
-DROP TABLE amenity;
-DROP TABLE film_professional;
-DROP TABLE age_rating;
-DROP TABLE genre;
-DROP TABLE viewer_account;
-DROP TABLE admin_account;
-DROP TABLE pending_account;
-DROP TABLE account;
-DROP TABLE movie;
+DROP TABLE cinemas;
+DROP TABLE amenities;
+DROP TABLE genres;
+DROP TABLE viewer_accounts;
+DROP TABLE admin_accounts;
+DROP TABLE pending_accounts;
+DROP TABLE accounts;
+DROP TABLE movies;
+DROP TABLE age_ratings;
 
-CREATE TABLE movie (
+CREATE TABLE age_ratings (
+    rating varchar(16) not null,
+    primary key (rating)
+);
+
+CREATE TABLE movies (
     title varchar(255) not null,
     release_date date not null,
+    age_rating varchar(16) not null,
+    director varchar(64),
+    actors varchar(255),
+    synopsis varchar(1024),
     poster blob,
+    
+    foreign key (age_rating) references age_ratings(rating),
     
     primary key (title, release_date)
 );
 
-CREATE TABLE account (
+CREATE TABLE accounts (
     username varchar(16) not null,
     salt char(64) not null, --salt is 32 bytes long, represented as a 64char hexstring
     password_and_salt_hash char(64) not null, --we use sha256(concat(salt, password))
@@ -35,26 +42,26 @@ CREATE TABLE account (
     primary key (username)
 );
 
-CREATE TABLE pending_account (
+CREATE TABLE pending_accounts (
     username varchar(16) not null,
     
     email varchar(254) not null,
     confirmation_key char(64) not null,
     created_at timestamp,
     
-    foreign key (username) references account(username),
+    foreign key (username) references accounts(username),
     primary key (username)
 );
 
-CREATE TABLE admin_account (
+CREATE TABLE admin_accounts (
     username varchar(16) not null,
     
-    foreign key (username) references account(username),
+    foreign key (username) references accounts(username),
     
     primary key (username)
 );
 
-CREATE TABLE viewer_account (
+CREATE TABLE viewer_accounts (
     username varchar(16) not null,
     email varchar(254) not null, --maximum length for a valid email address is 254 according to rfc3696
     nickname varchar(16),
@@ -63,36 +70,23 @@ CREATE TABLE viewer_account (
     
     --TODO check username not an admin
     
-    foreign key (username) references account(username),
+    foreign key (username) references accounts(username),
     
     primary key (username)
 );
 
-CREATE TABLE genre (
+CREATE TABLE genres (
     genre_title varchar(16) not null,
     primary key (genre_title)
 );
 
-CREATE TABLE age_rating (
-    rating varchar(16) not null,
-    primary key (rating)
-);
-
-CREATE TABLE film_professional (
-    prof_id integer not null,
-    first_name varchar(32) not null,
-    last_name varchar(32) not null,
-    birthdate date,
-    primary key (prof_id)
-);
-
-CREATE TABLE amenity (
+CREATE TABLE amenities (
     amenity_type varchar(32) not null,
     
     primary key (amenity_type)
 );
 
-CREATE TABLE cinema (
+CREATE TABLE cinemas (
     location varchar(64) not null,
     capacity integer not null,
     
@@ -111,7 +105,7 @@ CREATE TABLE viewers_rate_movies (
     
     constraint rating_is_star_rating check (rating > 0 and rating <= 5),
     
-    foreign key (title, release_date) references movie(title, release_date),
+    foreign key (title, release_date) references movies(title, release_date),
     
     primary key (username, title, release_date)
 );
@@ -121,55 +115,18 @@ CREATE TABLE movies_have_genres (
     release_date date not null,
     genre_title varchar(16) not null,
     
-    foreign key (genre_title) references genre(genre_title),
-    foreign key (title, release_date) references movie(title, release_date),
+    foreign key (genre_title) references genres(genre_title),
+    foreign key (title, release_date) references movies(title, release_date),
     
     primary key (title, release_date, genre_title)
-);
-
-CREATE TABLE actors_act_in_movies (
-    prof_id integer not null,
-    title varchar(255) not null,
-    release_date date not null,
-    roletype varchar(5),
-    
-    constraint roletype_check check (roletype='minor' or roletype='lead'),
-    
-    foreign key (prof_id) references film_professional(prof_id),
-    foreign key (title, release_date) references movie(title, release_date),
-    
-    primary key (prof_id, title, release_date)
-);
-
---movies generally have one director (but not always) hence the need for the table
-CREATE TABLE directors_direct_movies (
-    prof_id integer not null,
-    title varchar(255) not null,
-    release_date date not null,
-    
-    foreign key (prof_id) references film_professional(prof_id),
-    foreign key (title, release_date) references movie(title, release_date),
-    
-    primary key (prof_id, title, release_date)
-);
-
-CREATE TABLE movies_have_age_ratings (
-    title varchar(255) not null,
-    release_date date not null,
-    rating varchar(16) not null,
-    
-    foreign key (rating) references age_rating(rating),
-    foreign key (title, release_date) references movie(title, release_date),
-    
-    primary key (title, release_date, rating)
 );
 
 CREATE TABLE cinemas_have_amenities (
     location varchar(64) not null,
     amenity varchar(32) not null,
     
-    foreign key (location) references cinema(location),
-    foreign key (amenity) references amenity(amenity_type),
+    foreign key (location) references cinemas(location),
+    foreign key (amenity) references amenities(amenity_type),
     
     primary key (location, amenity)
 );
@@ -180,8 +137,8 @@ CREATE TABLE movies_screen_in_cinemas (
     location varchar(64) not null,
     screening_time timestamp not null,
     
-    foreign key (title, release_date) references movie(title, release_date),
-    foreign key (location) references cinema(location),
+    foreign key (title, release_date) references movies(title, release_date),
+    foreign key (location) references cinemas(location),
     
     primary key (title, release_date, location, screening_time)
 );
@@ -196,7 +153,7 @@ CREATE TABLE viewer_accounts_book_screenings (
     
     constraint num_seats_positive check (num_seats > 0),
     
-    foreign key (title, release_date) references movie(title, release_date),
+    foreign key (title, release_date) references movies(title, release_date),
     foreign key (title, release_date, location, screening_time) references
             movies_screen_in_cinemas(title, release_date, location, screening_time),
     

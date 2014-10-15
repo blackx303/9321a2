@@ -1,15 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Registration Page</title>
-</head>
-<body>
 
-<h1>Registration Page</h1>
+<c:set var="title" scope="request">Registration Page</c:set>
+<jsp:include page="/WEB-INF/_header.jsp" />
 
     <c:if test="${! empty usertaken}">
         <p>Sorry, the username &quot;${usertaken}&quot; is already taken.</p>
@@ -23,11 +17,8 @@
     <form action="register" method="post">
         <label for="username">Username: </label><input type="text" name="username" />
         <label for="password">Password: </label><input type="password" name="password" />
-        <label for="email">Email: </label><input type="text" name="email" />
+        <label for="email">Email: </label><input type="email" name="email" />
         <input type="submit" value="Register!" />
     </form>
 
-
-
-</body>
-</html>
+<%@ include file="/WEB-INF/_footer.jsp" %>

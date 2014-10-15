@@ -11,7 +11,7 @@
 <h1>Manage Application</h1>
 
 <a href="cinema">Manage Cinemas</a>
-<a href="movie/add">Add Movie</a>
+<a href="movie">Manage Movies</a>
 <a href="#">Add Screening</a>
 
 <%@ include file="/WEB-INF/_footer.jsp" %>

@@ -31,7 +31,7 @@ public class UserDAODerbyImpl extends GenericDAODerbyImpl implements UserDAO {
         try {
             PreparedStatement statement = 
                     conn.prepareStatement("SELECT username, salt, password_and_salt_hash " +
-                    		"FROM ACCOUNT WHERE username = ?");
+                    		"FROM accounts WHERE username = ?");
             statement.setString(1, username);
         
         
@@ -56,7 +56,7 @@ public class UserDAODerbyImpl extends GenericDAODerbyImpl implements UserDAO {
         String key = null;
         
         try {
-            PreparedStatement statement = conn.prepareStatement("INSERT INTO ACCOUNT (username, salt, password_and_salt_hash)"
+            PreparedStatement statement = conn.prepareStatement("INSERT INTO accounts (username, salt, password_and_salt_hash)"
                     + "values (?, ?, ?)");
             statement.setString(1, username);
             statement.setString(2, saltString);
@@ -70,7 +70,7 @@ public class UserDAODerbyImpl extends GenericDAODerbyImpl implements UserDAO {
                 r.nextBytes(keyBytes);
                 key = DatatypeConverter.printHexBinary(keyBytes);
                 
-                PreparedStatement insertpendingtable = conn.prepareStatement("INSERT INTO PENDING_ACCOUNT (username, confirmation_key, email, created_at)"
+                PreparedStatement insertpendingtable = conn.prepareStatement("INSERT INTO pending_accounts (username, confirmation_key, email, created_at)"
                         + "values (?, ?, ?, ?)");
                 insertpendingtable.setString(1, username);
                 insertpendingtable.setString(2, key);//confirmation key
@@ -99,7 +99,7 @@ public class UserDAODerbyImpl extends GenericDAODerbyImpl implements UserDAO {
     public void storeViewer(ViewerDTO user) {
         try {
             //update viewer_account table
-            PreparedStatement update = conn.prepareStatement("UPDATE viewer_account "
+            PreparedStatement update = conn.prepareStatement("UPDATE viewer_accounts "
                     + "SET nickname = ?, email = ?, first_name = ?, last_name = ? "
                     + "WHERE username = ?");
             update.setString(1, user.getNickname());
@@ -120,10 +120,10 @@ public class UserDAODerbyImpl extends GenericDAODerbyImpl implements UserDAO {
 
         try {
             PreparedStatement pend_statement = conn.prepareStatement("SELECT username, confirmation_key, email FROM "
-                    + "pending_account WHERE username = ?");
+                    + "pending_accounts WHERE username = ?");
             pend_statement.setString(1, username);
             ResultSet p = pend_statement.executeQuery();
-            PreparedStatement acc_statement = conn.prepareStatement("SELECT salt, password_and_salt_hash FROM account "
+            PreparedStatement acc_statement = conn.prepareStatement("SELECT salt, password_and_salt_hash FROM accounts "
                     + "WHERE (username = ?)");
             acc_statement.setString(1, username);
             ResultSet a = acc_statement.executeQuery();
@@ -143,13 +143,13 @@ public class UserDAODerbyImpl extends GenericDAODerbyImpl implements UserDAO {
         PendingUserDTO user = findPendingUser(username);
         
         try {
-            PreparedStatement insert = conn.prepareStatement("INSERT INTO viewer_account (email, username) "
+            PreparedStatement insert = conn.prepareStatement("INSERT INTO viewer_accounts (email, username) "
                     + "values (?, ?)");
             insert.setString(1, user.getEmail());
             insert.setString(2, username);
             insert.executeUpdate();
             
-            PreparedStatement remove = conn.prepareStatement("DELETE FROM pending_account "
+            PreparedStatement remove = conn.prepareStatement("DELETE FROM pending_accounts "
                     + "WHERE (username = ?)");
             remove.setString(1, username);
             remove.executeUpdate();
@@ -167,8 +167,8 @@ public class UserDAODerbyImpl extends GenericDAODerbyImpl implements UserDAO {
             PreparedStatement statement = 
                     conn.prepareStatement("SELECT a.username, a.salt, a.password_and_salt_hash, "
                             + "v.email, v.nickname, v.first_name, v.last_name "
-                            + "FROM account a "
-                            + "JOIN viewer_account v "
+                            + "FROM accounts a "
+                            + "JOIN viewer_accounts v "
                             + "ON a.username = v.username "
                             + "WHERE a.username = ?");
             statement.setString(1, username);
@@ -190,7 +190,7 @@ public class UserDAODerbyImpl extends GenericDAODerbyImpl implements UserDAO {
         UserDTO user = null;
         try {
             PreparedStatement statement = conn.prepareStatement("SELECT username "
-                    + "FROM admin_account WHERE username = ?");
+                    + "FROM admin_accounts WHERE username = ?");
             statement.setString(1, username);
             ResultSet r = statement.executeQuery();
             if(r.next()) {

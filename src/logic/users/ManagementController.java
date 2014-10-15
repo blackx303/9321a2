@@ -19,15 +19,18 @@ import jdbc.management.AmenityDAODerbyImpl;
 import jdbc.management.CinemaDAO;
 import jdbc.management.CinemaDAODerbyImpl;
 import jdbc.management.CinemaDTO;
+import jdbc.management.MovieDAO;
+import jdbc.management.MovieDAODerbyImpl;
 
 /**
  * Servlet implementation class ManagementController
  */
-@WebServlet(urlPatterns = {"/manage", "/cinema"})
+@WebServlet(urlPatterns = {"/manage", "/cinema", "/movie"})
 public class ManagementController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     private AmenityDAO amenities;
     private CinemaDAO cinemas;
+    private MovieDAO movies;
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -37,6 +40,7 @@ public class ManagementController extends HttpServlet {
         try {
             this.amenities = new AmenityDAODerbyImpl();
             this.cinemas = new CinemaDAODerbyImpl();
+            this.movies = new MovieDAODerbyImpl();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -55,6 +59,8 @@ public class ManagementController extends HttpServlet {
     		    request.getRequestDispatcher("WEB-INF/manage/manage.jsp").forward(request, response);
     		} else if(urlPattern.equals("/cinema")) {
     		    loadCinemaPage(request, response);
+    		} else if(urlPattern.equals("/movie")) {
+    		    loadMoviePage(request, response);
     		} else {
     		    System.out.println("url pattern:" + urlPattern);
     		}
@@ -123,4 +129,9 @@ public class ManagementController extends HttpServlet {
         request.getRequestDispatcher("WEB-INF/manage/cinema.jsp").forward(request, response);
     }
 
+    private void loadMoviePage(HttpServletRequest request,
+            HttpServletResponse response) throws ServletException, IOException {
+        request.setAttribute("movies", movies.findAll());
+        request.getRequestDispatcher("WEB-INF/manage/movie.jsp").forward(request, response);
+    }
 }

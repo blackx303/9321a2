@@ -19,7 +19,7 @@ public class AmenityDAODerbyImpl extends GenericDAODerbyImpl implements AmenityD
         Set<String> types = new HashSet<String>();
         
         try {
-            PreparedStatement statement = conn.prepareStatement("SELECT amenity_type FROM amenity");
+            PreparedStatement statement = conn.prepareStatement("SELECT amenity_type FROM amenities");
             ResultSet r = statement.executeQuery();
     
             while(r.next()) {

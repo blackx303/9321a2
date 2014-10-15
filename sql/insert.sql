@@ -1,49 +1,65 @@
--- Script inserts some starting data for the app
+-- Script INSERTs some starting data for the app
 
--- By default the password for the 'admin' account is admin;
+-- By default the password for the 'admin' account is admin
 -- the starting salt for the admin account is "00000000000000000000000000000000"
 -- which is obviously stored as a hexstring
-INSERT INTO account (username, salt, password_and_salt_hash)
-        values ('admin', '3030303030303030303030303030303030303030303030303030303030303030',
+INSERT INTO accounts (username, salt, password_and_salt_hash)
+        VALUES ('admin', '3030303030303030303030303030303030303030303030303030303030303030',
         '893c750abe47d04ea480910a2bc8787d1323cd11d4e6eaa3a6c890dbeb42bfa0');
-INSERT INTO admin_account (username) values ('admin');
+INSERT INTO admin_accounts (username) VALUES ('admin');
 
 -- The genre for a movie can be any one of: Romance, Horror, Thriller, Comedy, Drama, Biopic, Action
-INSERT INTO genre (genre_title) VALUES ('Romance');
-INSERT INTO genre (genre_title) VALUES ('Horror');
-INSERT INTO genre (genre_title) VALUES ('Thriller');
-INSERT INTO genre (genre_title) VALUES ('Comedy');
-INSERT INTO genre (genre_title) VALUES ('Drama');
-INSERT INTO genre (genre_title) VALUES ('Biopic');
-INSERT INTO genre (genre_title) VALUES ('Action');
+INSERT INTO genres (genre_title) VALUES ('Romance');
+INSERT INTO genres (genre_title) VALUES ('Horror');
+INSERT INTO genres (genre_title) VALUES ('Thriller');
+INSERT INTO genres (genre_title) VALUES ('Comedy');
+INSERT INTO genres (genre_title) VALUES ('Drama');
+INSERT INTO genres (genre_title) VALUES ('Biopic');
+INSERT INTO genres (genre_title) VALUES ('Action');
 
 -- Amenities should be selected out of a standard list of amenities
 -- including ATMs, widescreen, snack bar, and restaurant
-INSERT INTO AMENITY (AMENITY_TYPE) values ('ATM');
-INSERT INTO AMENITY (AMENITY_TYPE) values ('Widescreen');
-INSERT INTO AMENITY (AMENITY_TYPE) values ('Snack Bar');
-INSERT INTO AMENITY (AMENITY_TYPE) values ('Restaurant');
+INSERT INTO amenities (amenity_type) VALUES ('ATM');
+INSERT INTO amenities (amenity_type) VALUES ('Widescreen');
+INSERT INTO amenities (amenity_type) VALUES ('Snack Bar');
+INSERT INTO amenities (amenity_type) VALUES ('Restaurant');
 
 -- Age-ratings [just selected from australian classfication board] (G, PG, M, MA15+, R18+ X18+) 
-insert into AGE_RATING (RATING) values ('G'); 
-insert into AGE_RATING (RATING) values ('PG'); 
-insert into AGE_RATING (RATING) values ('M'); 
-insert into AGE_RATING (RATING) values ('MA15+'); 
-insert into AGE_RATING (RATING) values ('R18+'); 
-insert into AGE_RATING (RATING) values ('X18+');
+INSERT INTO age_ratings (rating) VALUES ('G'); 
+INSERT INTO age_ratings (rating) VALUES ('PG'); 
+INSERT INTO age_ratings (rating) VALUES ('M'); 
+INSERT INTO age_ratings (rating) VALUES ('MA15+'); 
+INSERT INTO age_ratings (rating) VALUES ('R18+'); 
+INSERT INTO age_ratings (rating) VALUES ('X18+');
 
 -- dummy data from here on out
 
 -- just some coming soon movies
-insert into MOVIE (TITLE, RELEASE_DATE) values ('Ouija', '2014-10-24');
-insert into MOVIE (TITLE, RELEASE_DATE) values ('White Bird in a Blizzard', '2014-10-25');
-insert into MOVIE (TITLE, RELEASE_DATE) values ('John Wick', '2014-10-24');
-insert into MOVIE (TITLE, RELEASE_DATE) values ('Interstellar', '2014-11-07');
+INSERT INTO movies (title, release_date, age_rating, director, actors, synopsis) 
+    VALUES ('Ouija', '2014-10-24', 'PG', 'Stiles White', 'Olivia Cooke, Ana Coto, Daren Kagasoff',
+    'A group of friends must confront their most terrifying fears when they awaken the dark powers of an ancient spirit board.');
+INSERT INTO movies (title, release_date, age_rating, director, actors, synopsis) 
+    VALUES ('White Bird in a Blizzard', '2014-10-25', 'PG', 'Gregg Araki', 'Shailene Woodley, Eva Green, Christopher Meloni',
+    'In 1988, a teenage girl''s life is thrown into chaos when her mother disappears.');
+INSERT INTO movies (title, release_date, age_rating, director, actors, synopsis) 
+    VALUES ('John Wick', '2014-10-24', 'M', 'David Leitch, Chad Stahelski', 'Keanu Reeves, Bridget Moynahan, Willem Dafoe',
+    'An ex-hitman comes out of retirement to track down the gangsters that took everything from him.');
+INSERT INTO movies (title, release_date, age_rating, director, actors, synopsis) 
+    VALUES ('Interstellar', '2014-11-07', 'PG', 'Christopher Nolan', 'Matthew McConaughey, Anne Hathaway, Jessica Chastain',
+    'A group of explorers make use of a newly discovered wormhole to surpass the limitations on human space travel and conquer the vast distances involved in an interstellar voyage.');
 -- and some movies already out
-INSERT INTO movie(title, release_date) VALUES('Shrek', '2001-05-18');
-INSERT INTO movie(title, release_date) VALUES('Bob the Builder', '2001-01-15');
-insert into MOVIE(TITLE, RELEASE_DATE) values('The Judge', '2014-10-10');
-insert into movie(title, release_date) values('Gone Girl', '2014-10-03');
+INSERT INTO movies(title, release_date, age_rating, director, actors, synopsis) 
+    VALUES('Shrek', '2001-05-18', 'G', 'Andrew Adamson, Vicky Jenson', 'Mike Myers, Eddie Murphy, Cameron Diaz',
+    'An ogre, in order to regain his swamp, travels along with an annoying donkey in order to bring a princess to a scheming lord, wishing himself King.');
+INSERT INTO movies(title, release_date, age_rating, director, actors, synopsis) 
+    VALUES('Bob the Builder', '2001-01-15', 'PG', 'Keith Chapman', 'Rob Rackstraw, Kate Harbour, Neil Morrissey',
+    'Bob the Builder is the animated adventures of Bob and his machines. Working together to overcome various challenges they get the job done.');
+INSERT INTO movies(TITLE, RELEASE_DATE, age_rating, director, actors, synopsis) 
+    VALUES('The Judge', '2014-10-10', 'MA15+', 'David Dobkin', 'Robert Downey Jr., Robert Duvall, Vera Farmiga',
+    'Big city lawyer Hank Palmer returns to his childhood home where his father, the town''s judge, is suspected of murder. Hank sets out to discover the truth and, along the way, reconnects with his estranged family.');
+INSERT INTO movies(title, release_date, age_rating, director, actors, synopsis) 
+    VALUES('Gone Girl', '2014-10-03', 'MA15+', 'David Fincher', 'Ben Affleck, Rosamund Pike, Neil Patrick Harris',
+    'With his wife''s disappearance having become the focus of an intense media circus, a man sees the spotlight turned on him when it''s suspected that he may not be innocent.');
 
 -- add genres to these movies
 INSERT INTO movies_have_genres(title, release_date, genre_title)
@@ -67,47 +83,29 @@ VALUES('Gone Girl', '2014-10-03', 'Drama');
 INSERT INTO movies_have_genres(title, release_date, genre_title)
 VALUES('Gone Girl', '2014-10-03', 'Thriller');
 
---add age ratings to these movies
-insert into MOVIES_HAVE_AGE_RATINGS(TITLE, RELEASE_DATE, RATING)
-values ('Ouija', '2014-10-24', 'PG');
-insert into MOVIES_HAVE_AGE_RATINGS(TITLE, RELEASE_DATE, RATING)
-values ('White Bird in a Blizzard', '2014-10-25', 'PG');
-insert into MOVIES_HAVE_AGE_RATINGS(TITLE, RELEASE_DATE, RATING)
-values ('John Wick', '2014-10-24', 'M');
-insert into MOVIES_HAVE_AGE_RATINGS(TITLE, RELEASE_DATE, RATING)
-values ('Interstellar', '2014-11-07', 'PG');
-insert into MOVIES_HAVE_AGE_RATINGS(TITLE, RELEASE_DATE, RATING)
-values ('Shrek', '2001-05-18', 'G');
-insert into MOVIES_HAVE_AGE_RATINGS(TITLE, RELEASE_DATE, RATING)
-values ('The Judge', '2014-10-10', 'MA15+');
-insert into MOVIES_HAVE_AGE_RATINGS(TITLE, RELEASE_DATE, RATING)
-values ('Gone Girl', '2014-10-03', 'MA15+');
-insert into MOVIES_HAVE_AGE_RATINGS(TITLE, RELEASE_DATE, RATING)
-values ('Bob the Builder', '2001-01-15', 'PG');
-
 --add some cinemas
-insert into CINEMA(location, capacity) values ('Chatswood', 80);
-insert into CINEMA(location, capacity) values ('Kingsford', 50);
-insert into CINEMA(location, capacity) values ('City', 120);
+INSERT INTO cinemas(location, capacity) VALUES ('Chatswood', 80);
+INSERT INTO cinemas(location, capacity) VALUES ('Kingsford', 50);
+INSERT INTO cinemas(location, capacity) VALUES ('City', 120);
 
 --add amenities to cinemas
-insert into CINEMAS_HAVE_AMENITIES(location, amenity) values ('Chatswood', 'ATM');
-insert into CINEMAS_HAVE_AMENITIES(location, amenity) values ('Chatswood', 'Widescreen');
-insert into CINEMAS_HAVE_AMENITIES(location, amenity) values ('Chatswood', 'Snack Bar');
-insert into CINEMAS_HAVE_AMENITIES(location, amenity) values ('City', 'ATM');
-insert into CINEMAS_HAVE_AMENITIES(location, amenity) values ('City', 'Widescreen');
-insert into CINEMAS_HAVE_AMENITIES(location, amenity) values ('City', 'Snack Bar');
-insert into CINEMAS_HAVE_AMENITIES(location, amenity) values ('City', 'Restaurant');
-insert into CINEMAS_HAVE_AMENITIES(location, amenity) values ('Kingsford', 'ATM');
-insert into CINEMAS_HAVE_AMENITIES(location, amenity) values ('Kingsford', 'Snack Bar');
+INSERT INTO cinemas_have_amenities(location, amenity) VALUES ('Chatswood', 'ATM');
+INSERT INTO cinemas_have_amenities(location, amenity) VALUES ('Chatswood', 'Widescreen');
+INSERT INTO cinemas_have_amenities(location, amenity) VALUES ('Chatswood', 'Snack Bar');
+INSERT INTO cinemas_have_amenities(location, amenity) VALUES ('City', 'ATM');
+INSERT INTO cinemas_have_amenities(location, amenity) VALUES ('City', 'Widescreen');
+INSERT INTO cinemas_have_amenities(location, amenity) VALUES ('City', 'Snack Bar');
+INSERT INTO cinemas_have_amenities(location, amenity) VALUES ('City', 'Restaurant');
+INSERT INTO cinemas_have_amenities(location, amenity) VALUES ('Kingsford', 'ATM');
+INSERT INTO cinemas_have_amenities(location, amenity) VALUES ('Kingsford', 'Snack Bar');
 
 --add screenings
-insert into MOVIES_SCREEN_IN_CINEMAS(location, TITLE, RELEASE_DATE, SCREENING_TIME)
-values ('Chatswood', 'Ouija', '2014-10-24', '2014-10-24 00:00:00');
-insert into MOVIES_SCREEN_IN_CINEMAS(location, TITLE, RELEASE_DATE, SCREENING_TIME)
-values ('Kingsford', 'Ouija', '2014-10-24', '2014-10-24 00:00:00');
-insert into MOVIES_SCREEN_IN_CINEMAS(location, TITLE, RELEASE_DATE, SCREENING_TIME)
-values ('City', 'Ouija', '2014-10-24', '2014-10-24 00:00:00');
-insert into MOVIES_SCREEN_IN_CINEMAS(location, TITLE, RELEASE_DATE, SCREENING_TIME)
-values ('City', 'The Judge', '2014-10-10', '2014-10-12 10:00:00');
+INSERT INTO movies_screen_in_cinemas(location, title, release_date, screening_time)
+VALUES ('Chatswood', 'Ouija', '2014-10-24', '2014-10-24 00:00:00');
+INSERT INTO movies_screen_in_cinemas(location, title, release_date, screening_time)
+VALUES ('Kingsford', 'Ouija', '2014-10-24', '2014-10-24 00:00:00');
+INSERT INTO movies_screen_in_cinemas(location, title, release_date, screening_time)
+VALUES ('City', 'Ouija', '2014-10-24', '2014-10-24 00:00:00');
+INSERT INTO movies_screen_in_cinemas(location, title, release_date, screening_time)
+VALUES ('City', 'The Judge', '2014-10-10', '2014-10-12 10:00:00');
 --TODO add more dummy screenings
