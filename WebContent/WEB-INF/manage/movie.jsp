@@ -9,7 +9,7 @@
     <form action="movie" method="post" enctype="multipart/form-data">
         <label>Title: <input type="text" autofocus required name="title" /></label>
         <label>Release Date: <input type="date" required name="releasedate" value="2014-01-01"/></label>
-        <label>Poster (jpg/png): <input type="file" name="poster" /></label>
+        <label>Poster (jpg/png): <input type="file" accept=".jpg,.jpeg,.png" name="poster" /></label>
         <label>Actors/Actresses: <input type="text" name="actors" /></label>
         <fieldset>
             Genre(s): 
