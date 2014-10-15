@@ -19,6 +19,7 @@
                 </c:forEach>
         </select></label>
         <label>Synopsis: <textarea name="synopsis" maxlength="1024"></textarea></label>
+        <input type="submit" value="Add Movie" />
     </form>
     
     <!-- Movies list -->

@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import jdbc.management.AgeRatingDAO;
+import jdbc.management.AgeRatingDAODerbyImpl;
 import jdbc.management.AmenityDAO;
 import jdbc.management.AmenityDAODerbyImpl;
 import jdbc.management.CinemaDAO;
@@ -31,6 +33,7 @@ public class ManagementController extends HttpServlet {
     private AmenityDAO amenities;
     private CinemaDAO cinemas;
     private MovieDAO movies;
+    private AgeRatingDAO ageRatings;
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -41,6 +44,7 @@ public class ManagementController extends HttpServlet {
             this.amenities = new AmenityDAODerbyImpl();
             this.cinemas = new CinemaDAODerbyImpl();
             this.movies = new MovieDAODerbyImpl();
+            this.ageRatings = new AgeRatingDAODerbyImpl();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -132,6 +136,7 @@ public class ManagementController extends HttpServlet {
     private void loadMoviePage(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute("movies", movies.findAll());
+        request.setAttribute("ageratings", ageRatings.findAll());
         request.getRequestDispatcher("WEB-INF/manage/movie.jsp").forward(request, response);
     }
 }
