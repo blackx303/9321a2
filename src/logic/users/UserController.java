@@ -57,8 +57,7 @@ public class UserController extends HttpServlet {
                 if(attemptRegistrationConfirmation(req, req.getParameter("u"),
                         req.getParameter("k"))) {
                     //if successful confirmation
-                    RequestDispatcher rd = req.getRequestDispatcher("/profile");
-                    rd.forward(req, resp);
+                    resp.sendRedirect("profile");
                 } else {
                     RequestDispatcher rd = req.getRequestDispatcher("WEB-INF/users/badconfirm.jsp");
                     rd.forward(req, resp);
@@ -153,7 +152,27 @@ public class UserController extends HttpServlet {
                 req.setAttribute("firstname", req.getParameter("firstname"));
                 req.setAttribute("lastname", req.getParameter("lastname"));
                 
-                resp.sendRedirect("profile");
+                resp.sendRedirect("profile?saved=true");
+            } else if(req.getSession().getAttribute("login") != null &&
+                    req.getParameter("oldpassword") != null &&
+                    req.getParameter("newpassword") != null &&
+                    req.getParameter("confirmpassword") != null) {
+                if(req.getParameter("newpassword").equals(req.getParameter("confirmpassword"))) {
+                    //TODO attempt authenticate then change passwrod
+                    ViewerDTO user = users.findNormalUser((String) req.getSession().getAttribute("login"));
+                    boolean authenticate = authenticate(req.getParameter("oldpassword"), user.getSalt(), user.getPasswordAndSaltHash());
+                    if(authenticate) {
+                        user.setPassword(req.getParameter("newpassword"));
+                        users.storeUser(user);
+                        resp.sendRedirect("profile?passwordchanged");
+                    } else {
+                        req.setAttribute("unauthorised", true);
+                        req.getRequestDispatcher("/WEB-INF/users/profile.jsp").forward(req, resp);
+                    }
+                } else {
+                    req.setAttribute("passwordsmatch", false);
+                    req.getRequestDispatcher("/WEB-INF/users/profile.jsp").forward(req, resp);
+                }
             } else {
                 req.getRequestDispatcher("/home").forward(req, resp);
             }
