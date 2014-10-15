@@ -7,5 +7,5 @@ public interface MovieDAO {
     MoviePosterDTO findMoviePoster(String title, Date releaseDate);
     List<MovieDTO> findAll();
 
-    boolean create(MovieDTO movie);
+    boolean create(MovieDTO movie, MoviePosterDTO poster);
 }

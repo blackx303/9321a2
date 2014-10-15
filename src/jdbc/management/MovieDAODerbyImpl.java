@@ -1,11 +1,13 @@
 package jdbc.management;
 
+import java.sql.Blob;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import jdbc.GenericDAODerbyImpl;
 
@@ -53,7 +55,7 @@ public class MovieDAODerbyImpl extends GenericDAODerbyImpl implements MovieDAO {
     }
 
     @Override
-    public boolean create(MovieDTO movie) {
+    public boolean create(MovieDTO movie, MoviePosterDTO poster) {
         boolean success = false;
         try {
             PreparedStatement existsMovie = conn.prepareStatement("SELECT * FROM movies WHERE title = ? and release_date = ?");
@@ -63,17 +65,23 @@ public class MovieDAODerbyImpl extends GenericDAODerbyImpl implements MovieDAO {
             ResultSet exists = existsMovie.executeQuery();
             
             if(!exists.next()) {
-                PreparedStatement insertMovie = conn.prepareStatement("INSERT INTO movies (title, release_date, age_rating, director, actors, synopsis) "
-                    + "VALUES (?, ?, ?, ?, ?, ?)");
+                //insert the movie to the movies table
+                PreparedStatement insertMovie = conn.prepareStatement("INSERT INTO movies (title, release_date, age_rating, director, actors, synopsis, poster_mimetype, poster) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
                 insertMovie.setString(1, movie.getTitle());
                 insertMovie.setDate(2, new java.sql.Date(movie.getReleaseDate().getTime()));
                 insertMovie.setString(3, movie.getAgeRating());
                 insertMovie.setString(4, movie.getDirector());
                 insertMovie.setString(5, movie.getActors());
                 insertMovie.setString(6, movie.getSynopsis());
+                insertMovie.setString(7, poster.getMimeType());
+                Blob blob = conn.createBlob();
+                blob.setBytes(1, poster.getData());
+                insertMovie.setBlob(8, blob);
                 
                 insertMovie.executeUpdate();
                 
+                //insert each genre for the movie into movies_have_genres table
                 PreparedStatement insertMovieGenre = conn.prepareStatement("INSERT INTO movies_have_genres (title, release_date, genre_title) "
                         + "VALUES (?, ?, ?)");
                 insertMovieGenre.setString(1, movie.getTitle());
@@ -90,6 +98,30 @@ public class MovieDAODerbyImpl extends GenericDAODerbyImpl implements MovieDAO {
         }
         
         return success;
+    }
+
+    @Override
+    public MoviePosterDTO findMoviePoster(String title,
+            java.util.Date releaseDate) {
+        MoviePosterDTO poster = null;
+        
+        try {
+            PreparedStatement movieQ = conn.prepareStatement("SELECT poster, poster_mimetype FROM movies "
+                    + "WHERE title = ? and release_date = ?");
+            movieQ.setString(1, title);
+            movieQ.setDate(2, new java.sql.Date(releaseDate.getTime()));
+            ResultSet r = movieQ.executeQuery();
+            if(r.next()) {
+                Blob blob = r.getBlob(1);
+                if(blob != null) {
+                    poster = new MoviePosterDTO(title, releaseDate, r.getString(2), blob.getBytes(1, (int) blob.length()));
+                }
+            }
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+
+        return poster;
     }
 
 }

@@ -1,6 +1,10 @@
 package logic.users;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -19,6 +23,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 
 import jdbc.management.AgeRatingDAO;
 import jdbc.management.AgeRatingDAODerbyImpl;
@@ -32,11 +37,12 @@ import jdbc.management.GenreDAODerbyImpl;
 import jdbc.management.MovieDAO;
 import jdbc.management.MovieDAODerbyImpl;
 import jdbc.management.MovieDTO;
+import jdbc.management.MoviePosterDTO;
 
 /**
  * Servlet implementation class ManagementController
  */
-@WebServlet(urlPatterns = {"/manage", "/cinema", "/movie"})
+@WebServlet(urlPatterns = {"/manage", "/cinema", "/movie", "/poster"})
 @MultipartConfig
 public class ManagementController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -79,6 +85,11 @@ public class ManagementController extends HttpServlet {
     		    loadCinemaPage(request, response);
     		} else if(urlPattern.equals("/movie")) {
     		    loadMoviePage(request, response);
+    		} else if(urlPattern.equals("/poster")) {
+    		    logger.log(Level.INFO, "got request for img for movie(title:" + request.getParameter("t") + ";release:" + request.getParameter("r") + ";)");
+    		    if(request.getParameter("t") != null && request.getParameter("r") != null) {
+    		        servePoster(request, response);
+    		    }
     		} else {
     		    logger.log(Level.WARNING, "url pattern:" + urlPattern);
     		}
@@ -87,7 +98,7 @@ public class ManagementController extends HttpServlet {
 	    }
 	}
 
-	/**
+    /**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -152,11 +163,11 @@ public class ManagementController extends HttpServlet {
 
     private void attemptAddMovie(HttpServletRequest request) {
         try {
-            // TODO Auto-generated method stub
             String title = request.getParameter("title");
             logger.log(Level.INFO, "date provided for addMovie is " + request.getParameter("releasedate"));
             Date releaseDate = new SimpleDateFormat("yyyy-MM-dd").parse(request.getParameter("releasedate"));
-            //TODO poster
+            Part posterPart = request.getPart("poster");
+            String fname = posterPart.getHeader("content-disposition").split("filename=\"")[1].split("\"")[0];
             String actors = request.getParameter("actors");
             List<String> genresChecked = new ArrayList<String>();
             String director = request.getParameter("director");
@@ -172,14 +183,37 @@ public class ManagementController extends HttpServlet {
                     genresChecked.add(genre);
                 }
             }
-            
             genresChecked.retainAll(genres.findAll());
             
+            String mimetype = "image/jpg";
+            if(fname.endsWith(".png")) {
+                mimetype = "image/png";
+            }
+            //get poster data
+            ByteArrayOutputStream posterByteStream = new ByteArrayOutputStream();
+            InputStream posterInStream = posterPart.getInputStream();
+            int read;
+            byte[] bytes = new byte[1024];
+            while((read = posterInStream.read(bytes)) != -1) {
+                posterByteStream.write(bytes, 0, read);
+            }
+            byte[] posterData = posterByteStream.toByteArray();
+            
             MovieDTO add = new MovieDTO(title, releaseDate, ageRating, genresChecked, director, actors, synopsis);
+            MoviePosterDTO poster = new MoviePosterDTO(title, releaseDate, mimetype, posterData);//TODO fix mimetype
             logger.log(Level.INFO, "adding movie with title " + add.getTitle());
-            movies.create(add);
+            movies.create(add, poster);
         } catch(ParseException p) {
             logger.log(Level.INFO, "Received bad date from client: " + request.getParameter("releasedate"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            logger.log(Level.WARNING, "problem parsing image");
+        } catch (IllegalStateException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ServletException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
     
@@ -196,5 +230,34 @@ public class ManagementController extends HttpServlet {
         request.setAttribute("ageratings", ageRatings.findAll());
         request.setAttribute("genres", genres.findAll());
         request.getRequestDispatcher("WEB-INF/manage/movie.jsp").forward(request, response);
+    }
+
+    private void servePoster(HttpServletRequest request,
+            HttpServletResponse response) {
+        try {
+            String title = request.getParameter("t");
+            Date release = new SimpleDateFormat("yyyy-MM-dd").parse(request.getParameter("r"));
+            
+            MoviePosterDTO poster = movies.findMoviePoster(title, release);
+            if(poster != null) {
+                response.setContentType(poster.getMimeType());
+                OutputStream out = response.getOutputStream();
+                ByteArrayInputStream bytesIn = new ByteArrayInputStream(poster.getData());
+                int read;
+                byte[] b = new byte[1024];
+                while((read = bytesIn.read(b)) != -1) {
+                    out.write(b, 0, read);
+                }
+                
+            }
+        } catch (ParseException p) {
+            try {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

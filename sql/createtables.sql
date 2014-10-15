@@ -25,7 +25,8 @@ CREATE TABLE movies (
     director varchar(64),
     actors varchar(255),
     synopsis varchar(1024),
-    poster blob,
+    poster blob not null,
+    poster_mimetype varchar(32),
     
     foreign key (age_rating) references age_ratings(rating),
     

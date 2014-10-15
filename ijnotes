@@ -1,0 +1,2 @@
+to login to derby from within ij (once derby running in server mode):
+connect 'jdbc:derby://localhost:1527/ass2_db;user=user;password=pass';
