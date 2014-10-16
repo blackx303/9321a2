@@ -1,5 +1,5 @@
 
-<br/>Footer HERE
+<br/>
 <a href="home">Home</a>
 </body>
 </html>
