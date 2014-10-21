@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 
+import jdbc.SearchDAO;
+import jdbc.SearchDAODerbyImpl;
 import jdbc.users.PendingUserDTO;
 import jdbc.users.UserDAO;
 import jdbc.users.UserDAODerbyImpl;
@@ -24,11 +26,13 @@ import jdbc.users.ViewerDTO;
 @WebServlet(urlPatterns = {"/", "/home", "/register", "/login", "/logout", "/confirm"})
 public class UserController extends HttpServlet {
     private UserDAO users;
+    private SearchDAO searchs;
     
     public UserController() {
         super();
         try {
             users = new UserDAODerbyImpl();
+            searchs = new SearchDAODerbyImpl();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -40,6 +44,8 @@ public class UserController extends HttpServlet {
         String urlPattern = req.getServletPath();
         
         if(urlPattern.equals("/") || urlPattern.equals("/home")) {
+        	req.setAttribute("nowShowing", searchs.getNowShowing());
+        	req.setAttribute("comingSoon", searchs.getComingSoon());
             RequestDispatcher rd = req.getRequestDispatcher("WEB-INF/home.jsp");
             rd.forward(req, resp);
         } else if(urlPattern.equals("/register")) {

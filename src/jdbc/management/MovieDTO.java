@@ -1,8 +1,10 @@
 package jdbc.management;
 
 import java.awt.image.BufferedImage;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
 
 
 public class MovieDTO implements Comparable<MovieDTO> {
@@ -25,6 +27,11 @@ public class MovieDTO implements Comparable<MovieDTO> {
 		this.director = director;
 		this.actors = actors;
 		this.synopsis = synopsis;
+	}
+	
+	public MovieDTO(String title, Date releaseDate) {
+		this.title = title;
+		this.releaseDate = releaseDate;
 	}
 
 	public String getTitle() {
@@ -96,5 +103,22 @@ public class MovieDTO implements Comparable<MovieDTO> {
         this.director = director;
     }
 
+    @Override
+	public boolean equals(Object o) {
+		if (o != null && o instanceof MovieDTO) {
+			String rhs = ((MovieDTO) o).title;
+			if (this.title.compareToIgnoreCase(rhs)== 0 && this.releaseDate.compareTo(((MovieDTO) o).getReleaseDate()) == 0) {
+				
+				return true;
+			}
+		}
+		return false;
+	}
+    
+    public boolean isReleased() {
+		java.sql.Date currentDate = new java.sql.Date(Calendar.getInstance().getTime().getTime());
+		return releaseDate.before(currentDate);
+	}
+    
 
 }

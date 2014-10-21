@@ -6,7 +6,7 @@
 <jsp:include page="/WEB-INF/_header.jsp" />
 
     <!-- search bar -->
-    <form action="controller"> 
+    <form action="search"> 
         <input type="text" name="search">
         <input type="submit" name="action" value="search">
     </form>
@@ -28,18 +28,30 @@
     <!-- End login/out etc -->
 
     <!-- now showing and coming soon tables -->
+    <h1> Now Showing </h1>
     <table>
-        <tr><th>Now Showing</th><th>Coming Soon</th></tr>
-        <c:forEach var="i" begin="1" end="3">
-            <tr>
-                <td> <a href=controller?action=details&title=movie${i}>Movie <c:out value="${i}"/></a></td>
-                <td> <a href=controller?action=details&title=movie${i}>Movie <c:out value="${i}"/></a></td>
-            </tr>
-            <tr>
-                <td> poster </td>
-                <td> poster </td>
-            </tr>
+    	<tr>
+        <c:forEach items="${nowShowing }" var="m">
+        	<td>
+	            <p><a href="details?action=details&title=${m.title}&releaseDate=${m.releaseDate}">${m.title }</a></p>
+	            <p> Age Rating: ${m.ageRating }</p>
+	            <p><img src="poster?t=${m.title}&r=${m.releaseDate}" height="200" width="150"/></p>
+            </td>
         </c:forEach>
+        </tr>
+    </table>
+    <h1> Coming Soon </h1>
+    <table>
+    	<tr>
+        <c:forEach items="${comingSoon }" var="m">
+        	<td>
+	            <p><a href="details?action=details&title=${m.title}&releaseDate=${m.releaseDate}">${m.title }</a></p>
+	            <p> Age Rating: ${m.ageRating }</p>
+	            <p> Release Date: ${m.releaseDate }</p>
+	            <p><img src="poster?t=${m.title}&r=${m.releaseDate}" height="200" width="150"/></p>
+            </td>
+        </c:forEach>
+        </tr>
     </table>
 
 <%@ include file="/WEB-INF/_footer.jsp" %>

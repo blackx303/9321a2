@@ -31,7 +31,7 @@
         <tr><th>Poster</th><th>Title</th><th>Release Date</th><th>Age Rating</th><th>Genre(s)</th>
                 <th>Director</th><th>Actors/Actresses</th><th>Synopsis</th></tr>
         <c:forEach items="${movies}" var="movie">
-            <tr><td><img src="poster?t=${movie.title}&r=${movie.releaseDate}" /></td><td>${movie.title}</td>
+            <tr><td><img src="poster?t=${movie.title}&r=${movie.releaseDate}" height="200" width="150"/></td><td>${movie.title}</td>
                     <td>${movie.releaseDate}</td><td>${movie.ageRating}</td><td><ul>
                 <c:forEach items="${movie.genres}" var="genre">
                     <li>${genre}</li>
