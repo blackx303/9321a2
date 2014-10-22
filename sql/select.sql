@@ -7,3 +7,5 @@ SELECT * from movies LIMIT 5;
 
 SELECT * FROM movies WHERE release_date < CURRENT DATE ORDER BY release_date DESC
 SELECT * FROM movies WHERE release_date > CURRENT DATE ORDER BY release_date
+
+SELECT * from viewers_rate_movies

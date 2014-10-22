@@ -46,19 +46,6 @@ public class Controller extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		processRequest(request,response);
-	}
-
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("post reuest");
-		processRequest(request, response);
-	}
-
-	private void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String forwardPage = "";
 		String urlPattern = request.getServletPath();
 		System.out.println(urlPattern);
@@ -73,14 +60,24 @@ public class Controller extends HttpServlet {
 		} else if(urlPattern.equals("/details")) {
 			handleDetailsPage(request, response);
 			forwardPage = "details.jsp";
-		} else if(urlPattern.equals("/review")) {
-			handlePostReview(request, response);
-			forwardPage = "details.jsp";
-		} 
-		
+		}
 		RequestDispatcher rd = request.getRequestDispatcher("/"+forwardPage);
 		 rd.forward(request, response);
 	}
+
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+		String urlPattern = request.getServletPath();
+
+		if(urlPattern.equals("/review")) {
+			handlePostReview(request, response);
+		}
+	}
+
 	
 	private void handleDetailsPage(HttpServletRequest request, HttpServletResponse response) {
 		String title = request.getParameter("title");
@@ -91,16 +88,21 @@ public class Controller extends HttpServlet {
 		request.setAttribute("reviews", reviews);
 	}
 	
-	private void handlePostReview(HttpServletRequest request, HttpServletResponse response) {
+	private void handlePostReview(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String title = request.getParameter("title");
 		Date releaseDate = java.sql.Date.valueOf(request.getParameter("releaseDate"));
+		System.out.println(title+releaseDate);
 		String user = (String) request.getSession().getAttribute("login");
 		int rating = Integer.parseInt(request.getParameter("rating"));
 		String reviewText = request.getParameter("reviewText");
 		ReviewDTO review = new ReviewDTO(title,releaseDate,user,rating,reviewText);
 		
 		searchs.storeReview(review);
-		handleDetailsPage(request, response);
+		MovieDTO movie = searchs.getMovie(title, releaseDate);
+		ArrayList<ReviewDTO> reviews = searchs.getReviews(title, releaseDate);
+		request.setAttribute("movie", movie);
+		request.setAttribute("reviews", reviews);
+		response.sendRedirect("details"+"?title="+title+"&releaseDate="+releaseDate);
 	}
 
 }
