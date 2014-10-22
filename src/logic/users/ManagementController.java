@@ -75,9 +75,9 @@ public class ManagementController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	    String login = (String) request.getSession().getAttribute("login");
-	    
-	    if("admin".equals(login)) {
-    		String urlPattern = request.getServletPath();
+
+        String urlPattern = request.getServletPath();
+	    if("admin".equals(login) || urlPattern.equals("/poster")) {
     		
     		if(urlPattern.equals("/manage")) {
     		    request.getRequestDispatcher("WEB-INF/manage/manage.jsp").forward(request, response);
