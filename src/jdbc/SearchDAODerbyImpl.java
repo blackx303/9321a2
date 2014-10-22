@@ -167,15 +167,28 @@ public class SearchDAODerbyImpl implements SearchDAO{
 	public void storeReview(ReviewDTO review) {
 		String sql = "INSERT INTO viewers_rate_movies (username, title, release_date, rating, review_text) "
 				+ "VALUES (?, ?, ?, ?, ?)";
-		PreparedStatement statement;
+		String exists = "SELECT username,title,release_date FROM viewers_rate_movies "
+				+ "WHERE username = ? AND title = ? AND release_date = ?";
+		PreparedStatement statement1;
+		PreparedStatement statement2;
 		try {
-			statement = conn.prepareStatement(sql);
-			statement.setString(1, review.getUsername());
-			statement.setString(2, review.getTitle());
-			statement.setDate(3, review.getReleaseDate());
-			statement.setInt(4, review.getRating());
-			statement.setString(5, review.getReview_text());
-			statement.executeUpdate();
+			statement2 = conn.prepareStatement(exists);
+			statement2.setString(1, review.getUsername());
+			statement2.setString(2, review.getTitle());
+			statement2.setDate(3, review.getReleaseDate());
+			ResultSet result = statement2.executeQuery();
+			if(!result.next()) {
+				statement1 = conn.prepareStatement(sql);
+				statement1.setString(1, review.getUsername());
+				statement1.setString(2, review.getTitle());
+				statement1.setDate(3, review.getReleaseDate());
+				statement1.setInt(4, review.getRating());
+				statement1.setString(5, review.getReview_text());
+				statement1.executeUpdate();
+			} else {
+				
+			}
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -18,6 +18,7 @@ import jdbc.SearchDAO;
 import jdbc.SearchDAODerbyImpl;
 import jdbc.management.MovieDTO;
 import jdbc.management.MovieDAODerbyImpl;
+import jdbc.users.UserDTO;
 
 
 /**
@@ -75,12 +76,7 @@ public class Controller extends HttpServlet {
 		} else if(urlPattern.equals("/review")) {
 			handlePostReview(request, response);
 			forwardPage = "details.jsp";
-		} else if(urlPattern.equals("/poster")) {
-		    logger.log(Level.INFO, "got request for img for movie(title:" + request.getParameter("t") + ";release:" + request.getParameter("r") + ";)");
-		    if(request.getParameter("t") != null && request.getParameter("r") != null) {
-		       // servePoster(request, response);
-		    }
-		}
+		} 
 		
 		RequestDispatcher rd = request.getRequestDispatcher("/"+forwardPage);
 		 rd.forward(request, response);
@@ -96,7 +92,14 @@ public class Controller extends HttpServlet {
 	}
 	
 	private void handlePostReview(HttpServletRequest request, HttpServletResponse response) {
+		String title = request.getParameter("title");
+		Date releaseDate = java.sql.Date.valueOf(request.getParameter("releaseDate"));
+		String user = (String) request.getSession().getAttribute("login");
+		int rating = Integer.parseInt(request.getParameter("rating"));
+		String reviewText = request.getParameter("reviewText");
+		ReviewDTO review = new ReviewDTO(title,releaseDate,user,rating,reviewText);
 		
+		searchs.storeReview(review);
 		handleDetailsPage(request, response);
 	}
 
