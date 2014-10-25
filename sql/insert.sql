@@ -4,9 +4,16 @@
 -- the starting salt for the admin account is "00000000000000000000000000000000"
 -- which is obviously stored as a hexstring
 INSERT INTO accounts (username, salt, password_and_salt_hash)
-        VALUES ('admin', '3030303030303030303030303030303030303030303030303030303030303030',
-        '893c750abe47d04ea480910a2bc8787d1323cd11d4e6eaa3a6c890dbeb42bfa0');
+        VALUES ('admin', '6F3E52C3A6648442992D4A597D6678D9CCBDCFAEBD1A36466D7E726D32B93788',
+        'DF5570D1C8CF304B28137058B40FCD58683DFBBC781F22AED99A167D96D4507C');
 INSERT INTO admin_accounts (username) VALUES ('admin');
+
+-- A viewer account (user=pass="xavier")
+INSERT INTO accounts (username, salt, password_and_salt_hash)
+        VALUES ('xavier', '81162EE7AF399374F9F3A794598CA85C3E4C6F28367697623E4C7F90FC8B8159',
+        '5A2174EF0B4341C04D0CBE61A1A8B3EDE4ECD2F48F80359ED9B5F53A4B9C8548');
+INSERT INTO viewer_accounts (username, email, nickname, first_name, last_name)
+        VALUES ('xavier', 'xavier@xavierblack.me', 'xav', 'X', 'Blk');
 
 -- The genre for a movie can be any one of: Romance, Horror, Thriller, Comedy, Drama, Biopic, Action
 INSERT INTO genres (genre_title) VALUES ('Romance');
