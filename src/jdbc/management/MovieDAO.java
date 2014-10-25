@@ -8,4 +8,5 @@ public interface MovieDAO {
     List<MovieDTO> findAll();
 
     boolean create(MovieDTO movie, MoviePosterDTO poster);
+    List<MovieDTO> findAllNowShowing();
 }

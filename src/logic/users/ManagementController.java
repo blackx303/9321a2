@@ -38,17 +38,21 @@ import jdbc.management.MovieDAO;
 import jdbc.management.MovieDAODerbyImpl;
 import jdbc.management.MovieDTO;
 import jdbc.management.MoviePosterDTO;
+import jdbc.management.ScreeningDAO;
+import jdbc.management.ScreeningDAODerbyImpl;
+import jdbc.management.ScreeningDTO;
 
 /**
  * Servlet implementation class ManagementController
  */
-@WebServlet(urlPatterns = {"/manage", "/cinema", "/movie", "/poster"})
+@WebServlet(urlPatterns = {"/manage", "/cinema", "/movie", "/screening", "/poster"})
 @MultipartConfig
 public class ManagementController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     private AmenityDAO amenities;
     private CinemaDAO cinemas;
     private MovieDAO movies;
+    private ScreeningDAO screenings;
     private AgeRatingDAO ageRatings;
     private GenreDAO genres;
     private final static Logger logger = 
@@ -63,6 +67,7 @@ public class ManagementController extends HttpServlet {
             this.amenities = new AmenityDAODerbyImpl();
             this.cinemas = new CinemaDAODerbyImpl();
             this.movies = new MovieDAODerbyImpl();
+            this.screenings = new ScreeningDAODerbyImpl();
             this.ageRatings = new AgeRatingDAODerbyImpl();
             this.genres = new GenreDAODerbyImpl();
         } catch (SQLException e) {
@@ -85,6 +90,8 @@ public class ManagementController extends HttpServlet {
     		    loadCinemaPage(request, response);
     		} else if(urlPattern.equals("/movie")) {
     		    loadMoviePage(request, response);
+    		} else if(urlPattern.equals("/screening")) {
+    		    loadScreeningPage(request, response);
     		} else if(urlPattern.equals("/poster")) {
     		    logger.log(Level.INFO, "got request for img for movie(title:" + request.getParameter("t") + ";release:" + request.getParameter("r") + ";)");
     		    if(request.getParameter("t") != null && request.getParameter("r") != null) {
@@ -124,6 +131,14 @@ public class ManagementController extends HttpServlet {
 	                attemptAddMovie(request);
                 }
 	            response.sendRedirect("movie");
+	        } else if(urlPattern.equals("/screening")) {
+	            if(request.getParameter("movie") != null &&
+	                    request.getParameter("cinema") != null &&
+	                    request.getParameter("screeningdate") != null &&
+	                    request.getParameter("screeningtime") != null) {
+	                attemptAddScreening(request);
+	            }
+	            response.sendRedirect("screening");
 	        } else {
 	            request.getRequestDispatcher(urlPattern).forward(request, response);
 	        }
@@ -131,6 +146,27 @@ public class ManagementController extends HttpServlet {
 	        response.sendRedirect("home");
 	    }
 	}
+
+    private void attemptAddScreening(HttpServletRequest request) {
+        String movieStr = request.getParameter("movie");
+        String cinema = request.getParameter("cinema");
+        String dateStr = request.getParameter("screeningdate");
+        String timeStr = request.getParameter("screeningtime");
+        System.out.println("Attempting to add screening for " 
+                + movieStr + " at " + cinema + " starting at " + dateStr + " " + timeStr);
+        try {
+            Date screeningTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse((dateStr + " " + timeStr));
+            String[] movieId = movieStr.split(";");
+            String title = movieId[1];
+            Date releaseDate = new SimpleDateFormat("yyyy-MM-dd").parse(movieId[0]);
+            
+            ScreeningDTO screening = new ScreeningDTO(title, releaseDate, cinema, screeningTime);
+            
+            screenings.create(screening);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
 
     private void attemptAddCinema(HttpServletRequest request) {
         String location = request.getParameter("location");
@@ -230,6 +266,14 @@ public class ManagementController extends HttpServlet {
         request.setAttribute("ageratings", ageRatings.findAll());
         request.setAttribute("genres", genres.findAll());
         request.getRequestDispatcher("WEB-INF/manage/movie.jsp").forward(request, response);
+    }
+    
+    private void loadScreeningPage(HttpServletRequest request,
+            HttpServletResponse response) throws ServletException, IOException {
+        request.setAttribute("screenings", screenings.findAll());
+        request.setAttribute("movies", movies.findAllNowShowing());
+        request.setAttribute("cinemas", cinemas.findAll());
+        request.getRequestDispatcher("WEB-INF/manage/screening.jsp").forward(request, response);
     }
 
     private void servePoster(HttpServletRequest request,

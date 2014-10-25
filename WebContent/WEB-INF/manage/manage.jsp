@@ -12,6 +12,6 @@
 
 <a href="cinema">Manage Cinemas</a>
 <a href="movie">Manage Movies</a>
-<a href="#">Add Screening</a>
+<a href="screening">Manage Screenings</a>
 
 <%@ include file="/WEB-INF/_footer.jsp" %>
