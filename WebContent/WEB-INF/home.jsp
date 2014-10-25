@@ -6,10 +6,12 @@
 <jsp:include page="/WEB-INF/_header.jsp" />
 
     <!-- search bar -->
-    <form action="search"> 
-        <input type="text" name="search">
-        <input type="submit" name="action" value="search">
-    </form>
+    <c:if test="${! empty login }">
+	    <form action="search"> 
+	        <input type="text" name="search">
+	        <input type="submit" name="action" value="search">
+	    </form>
+    </c:if>
     
     <!-- Login/out etc -->
     <c:if test="${! empty login}" var="loggedin">
