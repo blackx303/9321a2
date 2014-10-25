@@ -9,6 +9,11 @@
     <c:if test="${! empty login }">
 	    <form action="search"> 
 	        <input type="text" name="search">
+		        <fieldset>
+	            Genre(s): 
+	                <c:forEach items="${genres}" var="genre">
+	                    <label>${genre}<input type="checkbox" name="genre_${genre}"></label>
+	                </c:forEach> </fieldset>
 	        <input type="submit" name="action" value="search">
 	    </form>
     </c:if>

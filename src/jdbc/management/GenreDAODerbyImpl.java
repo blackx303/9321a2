@@ -11,7 +11,9 @@ import jdbc.management.GenreDAO;
 
 public class GenreDAODerbyImpl extends GenericDAODerbyImpl implements GenreDAO {
 
-    public GenreDAODerbyImpl() throws SQLException {
+    private static GenreDAO instance = null;
+
+    private GenreDAODerbyImpl() throws SQLException {
         super();
     }
 
@@ -30,6 +32,13 @@ public class GenreDAODerbyImpl extends GenericDAODerbyImpl implements GenreDAO {
             e.printStackTrace();
         }
         return allGenres;
+    }
+
+    public static GenreDAO get() throws SQLException {
+        if(instance == null) {
+            instance = new GenreDAODerbyImpl();
+        }
+        return instance;
     }
 
 }

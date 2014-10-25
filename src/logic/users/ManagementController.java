@@ -69,7 +69,7 @@ public class ManagementController extends HttpServlet {
             this.movies = new MovieDAODerbyImpl();
             this.screenings = new ScreeningDAODerbyImpl();
             this.ageRatings = new AgeRatingDAODerbyImpl();
-            this.genres = new GenreDAODerbyImpl();
+            this.genres = GenreDAODerbyImpl.get();
         } catch (SQLException e) {
             e.printStackTrace();
         }

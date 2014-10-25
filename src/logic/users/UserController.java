@@ -17,6 +17,8 @@ import javax.xml.bind.DatatypeConverter;
 
 import jdbc.SearchDAO;
 import jdbc.SearchDAODerbyImpl;
+import jdbc.management.GenreDAO;
+import jdbc.management.GenreDAODerbyImpl;
 import jdbc.users.PendingUserDTO;
 import jdbc.users.UserDAO;
 import jdbc.users.UserDAODerbyImpl;
@@ -27,12 +29,14 @@ import jdbc.users.ViewerDTO;
 public class UserController extends HttpServlet {
     private UserDAO users;
     private SearchDAO searchs;
+    private GenreDAO genres;
     
     public UserController() {
         super();
         try {
             users = new UserDAODerbyImpl();
             searchs = new SearchDAODerbyImpl();
+            this.genres = GenreDAODerbyImpl.get();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -46,6 +50,7 @@ public class UserController extends HttpServlet {
         if(urlPattern.equals("/") || urlPattern.equals("/home")) {
         	req.setAttribute("nowShowing", searchs.getNowShowing());
         	req.setAttribute("comingSoon", searchs.getComingSoon());
+            req.setAttribute("genres", genres.findAll());
             RequestDispatcher rd = req.getRequestDispatcher("WEB-INF/home.jsp");
             rd.forward(req, resp);
         } else if(urlPattern.equals("/register")) {
