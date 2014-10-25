@@ -6,6 +6,9 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
 <title>Search Results</title>
 </head>
 <body>
@@ -14,29 +17,35 @@
 	
 	
 	<!-- Search results table -->
-	You searched for <c:out value="${search}"/>
-	Results: <c:out value="${results}"/>
-	<table>
+	Showing ${showing} search result(s) for "<c:out value="${search}"/>".
+	<hr>
+	
 		<c:forEach items="${results}" var="i">
-			<tr>
-				<td> <a href="controller?action=details&title=${i.title}"><c:out value="${i.title}"/></a></td>
-			</tr>
-			<tr>
-				<td>Release Date: <c:out value="${i.releaseDate }"/></td>
-			</tr>
-			<c:if test="${not empty i.genre }">
-				<tr>
-					<td>Genre: <c:out value="${i.genre }"/></td>
-				</tr>
+			
+				<p><a href="details?action=details&title=${i.title}&releaseDate=${i.releaseDate}"><c:out value="${i.title}"/></a></p>
+			
+				
+				<p><img src="poster?t=${i.title}&r=${i.releaseDate}" height="200" width="150"/></p>
+				<p>Release Date: <c:out value="${i.releaseDate }"/></p>
+			
+			<c:if test="${not empty i.genres }">
+				
+					<p>Genre: <c:out value="${i.genres }"/></p>
+				
+			</c:if>
+			<c:if test="${not empty i.actors }">
+				
+					<p>Actors: <c:out value="${i.actors }"/></p>
+				
 			</c:if>
 			<c:if test="${not empty i.ageRating }">
-				<tr>
-					<td>Age Rating: <c:out value="${i.ageRating }"/></td>
-				</tr>
+				
+					<p>Age Rating: <c:out value="${i.ageRating }"/></p>
+				
 			</c:if>
-
+			<hr>
 		</c:forEach>
-	</table>
 	
-</body>
+<%@ include file="/WEB-INF/_footer.jsp" %>
+
 </html>
