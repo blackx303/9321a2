@@ -105,20 +105,19 @@ public class MovieDTO implements Comparable<MovieDTO> {
 
     @Override
 	public boolean equals(Object o) {
-		if (o != null && o instanceof MovieDTO) {
-			String rhs = ((MovieDTO) o).title;
-			if (this.title.compareToIgnoreCase(rhs)== 0 && this.releaseDate.compareTo(((MovieDTO) o).getReleaseDate()) == 0) {
-				
-				return true;
-			}
-		}
-		return false;
+        if(this == o) return true;
+        if(!(o instanceof MovieDTO)) return false;
+        
+        MovieDTO m = (MovieDTO) o;
+        
+        if(! title.equals(m.title)) return false;
+        if(! releaseDate.equals(m.releaseDate)) return false;
+		
+		return true;
 	}
     
     public boolean isReleased() {
 		java.sql.Date currentDate = new java.sql.Date(Calendar.getInstance().getTime().getTime());
 		return releaseDate.before(currentDate);
 	}
-    
-
 }

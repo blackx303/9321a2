@@ -35,7 +35,7 @@ public class UserController extends HttpServlet {
         super();
         try {
             users = new UserDAODerbyImpl();
-            searchs = new SearchDAODerbyImpl();
+            searchs = SearchDAODerbyImpl.get();
             this.genres = GenreDAODerbyImpl.get();
         } catch (SQLException e) {
             e.printStackTrace();

@@ -7,7 +7,7 @@
 
     <!-- search bar -->
     <c:if test="${! empty login }">
-	    <form action="search"> 
+	    <form action="search" method="get"> 
 	        <input type="text" name="search">
 		        <fieldset>
 	            Genre(s): 

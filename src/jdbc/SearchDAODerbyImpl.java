@@ -2,7 +2,10 @@ package jdbc;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.sql.Date;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,9 +16,10 @@ import jdbc.management.MovieDTO;
 
 public class SearchDAODerbyImpl implements SearchDAO{
 	
-	Connection conn;
+	private static SearchDAODerbyImpl instance;
+    Connection conn;
 	
-	public SearchDAODerbyImpl() throws SQLException {
+	private SearchDAODerbyImpl() throws SQLException {
         this.conn = DBConnFactory.getConnection();
 	}
 
@@ -244,5 +248,93 @@ public class SearchDAODerbyImpl implements SearchDAO{
 		}
 		return comingSoon;
 	}
+
+    @Override
+    public ArrayList<MovieDTO> getResults(String query,
+            List<String> withinGenres) {
+        System.out.println("query: " + query);
+        Set<MovieDTO> sresults = new TreeSet<MovieDTO>();
+        // SAMPLE QUERY
+        // select * from movies m join movies_have_genres j on m.title = j.title and m.release_date = j.release_date 
+        //         where (j.genre_title = 'Drama' or j.genre_title = 'Thriller')
+        //             and (lower(m.title) like '%bird%' or lower(m.title) like '%girl%');
+        
+        String[] keywordSplit = query.split("[^a-zA-Z]");
+        List<String> keywords = new ArrayList<String>();
+        for(String k : keywordSplit) {
+            if(! k.isEmpty()) {
+                keywords.add(k);
+            }
+        }
+        
+        String queryStr = "SELECT m.title, m.release_date, m.age_rating, m.director, m.actors, m.synopsis " +
+        		"FROM movies m JOIN movies_have_genres g " +
+        		"ON m.title = g.title AND m.release_date = g.release_date " +
+        		"WHERE (g.genre_title = 'no genre really'";//hack so we don't have an empty ()
+        
+        for(int i = 0; i < withinGenres.size(); ++i) {
+            queryStr = queryStr + " OR g.genre_title = ?";
+        }
+        
+        queryStr = queryStr + ") " +
+        		"AND (lower(m.title) LIKE '%aaaaaaaaaaa%'";//another hack dummy string
+        
+        for(int i = 0; i < keywords.size(); ++i) {
+            queryStr = queryStr + " OR lower(m.title) LIKE ?";
+        }
+        
+        queryStr = queryStr + ")";
+        
+        try {
+            PreparedStatement find = conn.prepareStatement(queryStr);
+            System.out.println("querystr looks like " + queryStr);
+            for(int i = 0; i < withinGenres.size(); ++i) {
+                System.out.println("setting " + (i + 1) + " to " + withinGenres.get(i));
+                find.setString(i + 1, withinGenres.get(i));
+            }
+            
+            for(int i = 0; i < keywords.size(); ++i) {
+                System.out.println("setting " + (i + withinGenres.size() + 1) + " to %" + keywords.get(i).toLowerCase() + "%");
+                find.setString(i + withinGenres.size() + 1, "%" + keywords.get(i).toLowerCase() + "%");
+            }
+            
+            
+            System.out.println("about to execute:::: " + queryStr + "::::");
+            ResultSet results = find.executeQuery();
+            System.out.println("executed");
+            
+            
+            while(results.next()) {
+                List<String> genres = new ArrayList<String>();
+                PreparedStatement mGenres = conn.prepareStatement("SELECT g.genre_title " +
+            		"FROM movies m JOIN movies_have_genres g " +
+            		"ON m.title = g.title AND m.release_date = g.release_date " +
+            		"WHERE m.title = ? AND m.release_date = ?");
+                mGenres.setString(1, results.getString(1));
+                mGenres.setDate(2, results.getDate(2));
+                ResultSet genreResults = mGenres.executeQuery();
+                while(genreResults.next()) {
+                    genres.add(genreResults.getString(1));
+                }
+                
+                sresults.add(new MovieDTO(results.getString(1), results.getDate(2), results.getString(3),
+                        genres, results.getString(4), results.getString(5), results.getString(6)));
+            }
+        } catch(SQLException s) {
+            s.printStackTrace();
+        }
+        System.out.println("result size " + sresults.size());
+        for(MovieDTO r : sresults) {
+            System.out.println("result: " + r.getTitle() + " " + r.getReleaseDate());
+        }
+        return new ArrayList<MovieDTO>(sresults);
+    }
+
+    public static SearchDAO get() throws SQLException {
+        if(instance == null) {
+            instance = new SearchDAODerbyImpl();
+        }
+        return instance;
+    }
 
 }

@@ -2,6 +2,7 @@ package jdbc;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.List;
 
 import jdbc.management.MovieDTO;
 
@@ -19,6 +20,9 @@ public interface SearchDAO {
 	public ArrayList<MovieDTO> getNowShowing();
 	
 	public ArrayList<MovieDTO> getComingSoon();
+
+    public ArrayList<MovieDTO> getResults(String query,
+            List<String> withinGenres);
 	
 	
 

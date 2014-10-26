@@ -3,6 +3,8 @@ import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,6 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 import jdbc.ReviewDTO;
 import jdbc.SearchDAO;
 import jdbc.SearchDAODerbyImpl;
+import jdbc.management.GenreDAO;
+import jdbc.management.GenreDAODerbyImpl;
 import jdbc.management.MovieDTO;
 import jdbc.management.MovieDAODerbyImpl;
 import jdbc.users.UserDTO;
@@ -29,6 +33,7 @@ public class Controller extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	static Logger logger = Logger.getLogger(Controller.class.getName());
 	private SearchDAO searchs;
+    private GenreDAO genres;
        
     /**
      * @throws ServletException 
@@ -38,8 +43,8 @@ public class Controller extends HttpServlet {
     public Controller() throws ServletException, SQLException {
     	// TODO Auto-generated constructor stub
         super();
-        searchs = new SearchDAODerbyImpl();
-        
+        searchs = SearchDAODerbyImpl.get();
+        genres = GenreDAODerbyImpl.get();
     }
 
 	/**
@@ -53,7 +58,18 @@ public class Controller extends HttpServlet {
 		if (urlPattern.equals("/search")) {
 			String query = request.getParameter("search");
 			request.setAttribute("search", query);
-			ArrayList<MovieDTO> results = searchs.getResults(query);
+			
+			Enumeration<String> paramNames = request.getParameterNames();
+            List<String> genresChecked = new ArrayList<String>();
+            while(paramNames.hasMoreElements()) {
+                String name = paramNames.nextElement();
+                if(name.startsWith("genre_")) {
+                    String genre = name.replaceFirst("genre_", "");
+                    genresChecked.add(genre);
+                }
+            }
+            genresChecked.retainAll(genres.findAll());
+			ArrayList<MovieDTO> results = searchs.getResults(query, genresChecked);
 			request.setAttribute("results", results);
 			request.setAttribute("showing", results.size());
 			forwardPage = "search.jsp";
