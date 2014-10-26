@@ -69,6 +69,7 @@ public class Controller extends HttpServlet {
                 }
             }
             genresChecked.retainAll(genres.findAll());
+            if(genresChecked.size() == 0) genresChecked.addAll(genres.findAll());//if no genres checked assume all
 			ArrayList<MovieDTO> results = searchs.getResults(query, genresChecked);
 			request.setAttribute("results", results);
 			request.setAttribute("showing", results.size());
