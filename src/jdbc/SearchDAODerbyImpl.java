@@ -277,7 +277,7 @@ public class SearchDAODerbyImpl implements SearchDAO{
         }
         
         queryStr = queryStr + ") " +
-        		"AND (lower(m.title) LIKE '%aaaaaaaaaaa%'";//another hack dummy string
+        		"OR (lower(m.title) LIKE '%aaaaaaaaaaa%'";//another hack dummy string
         
         for(int i = 0; i < keywords.size(); ++i) {
             queryStr = queryStr + " OR lower(m.title) LIKE ?";

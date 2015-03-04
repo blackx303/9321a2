@@ -116,6 +116,8 @@ INSERT INTO movies_have_genres(title, release_date, genre_title)
 VALUES('Gone Girl', '2014-10-03', 'Drama');
 INSERT INTO movies_have_genres(title, release_date, genre_title)
 VALUES('Gone Girl', '2014-10-03', 'Thriller');
+INSERT INTO movies_have_genres(title, release_date, genre_title)
+VALUES('Bob the Builder', '2001-01-15', 'Thriller');
 
 --add some cinemas
 INSERT INTO cinemas(location, capacity) VALUES ('Chatswood', 80);
